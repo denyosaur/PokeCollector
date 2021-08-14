@@ -11,15 +11,25 @@ CREATE TABLE users (
 
 CREATE TABLE trades (
     id PRIMARY KEY TEXT,
-    seller_id TEXT UNIQUE NOT NULL
+    message_id
+        REFERENCES messages(id),
+    seller_id TEXT NOT NULL
         REFERENCES users(id) ON DELETE CASCADE,
-    buyer_id TEXT UNIQUE NOT NULL
+    buyer_id TEXT NOT NULL
         REFERENCES users(id) ON DELETE CASCADE,
     seller_offer TEXT NOT NULL,
     buyer_offer TEXT NOT NULL,
-    seller_message TEXT NOT NULL,
-    buyer_message TEXT NOT NULL,
 );
+
+CREATE TABLE messages (
+    id PRIMARY KEY TEXT,
+    from_user_id TEXT NOT NULL
+        REFERENCES users(id) ON DELETE CASCADE,
+    to_user_id TEXT NOT NULL
+        REFERENCES users(id) ON DELETE CASCADE,
+    message TEXT,
+    timestamp NOT NULL
+)
 
 CREATE TABLE cards (
     id PRIMARY KEY TEXT,
@@ -28,18 +38,18 @@ CREATE TABLE cards (
     subtypes TEXT[],
     hp TEXT,
     types TEXT[],
-    evolvesTo TEXT[],
+    evolves_to TEXT[],
     rules TEXT[],
     attacks TEXT,
     weaknesses TEXT,
-    retreatCost TEXT,
-    convertedRetreatCost TEXT,
-    setName TEXT,
-    setLogo TEXT,
+    retreat_cost TEXT,
+    converted_retreat_cost TEXT,
+    set_name TEXT,
+    set_logo TEXT,
     number TEXT,
     artist TEXT,
     rarity TEXT,
-    nationalPokedexNumbers TEXT[],
+    national_pokedex_numbers TEXT[],
     legalities TEXT,
     images TEXT,
     tcgplayer TEXT,
@@ -48,16 +58,24 @@ CREATE TABLE cards (
 
 CREATE TABLE users_cards (
     id PRIMARY KEY TEXT,
-    user_id TEXT UNIQUE NOT NULL
+    user_id TEXT NOT NULL
         REFERENCES users(id) ON DELETE CASCADE,
-    card_id TEXT UNIQUE NOT NULL
+    card_id TEXT NOT NULL
         REFERENCES cards(id) ON DELETE CASCADE,
+    number_owned INTEGER
 );
 
 CREATE TABLE users_decks (
     id PRIMARY KEY TEXT,
-    user_id TEXT UNIQUE NOT NULL
+    user_id TEXT NOT NULL
         REFERENCES users(id) ON DELETE CASCADE,
-    users_cards_id TEXT UNIQUE NOT NULL
-        REFERENCES users_cards(id),
+    deck_name TEXT NOT NULL
+);
+
+CREATE TABLE cards_in_users_decks (
+    id PRIMARY KEY TEXT,
+    deck_id TEXT NOT NULL
+        REFERENCES users_decks(id) ON DELETE CASCADE,
+    users_cards_id TEXT NOT NULL
+        REFERENCES users_cards(id) ON DELETE CASCADE,
 );

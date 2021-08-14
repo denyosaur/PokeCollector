@@ -22,11 +22,11 @@ class Cards {
             [card_id]);
 
         //check if the new card is already in DB
-        if (duplicateCheck.rows[0]) throw new BadRequestError(`Duplicate Entry for: ${card_id}, ${card_name}`)
+        if (duplicateCheck.rows[0]) throw new BadRequestError(`Duplicate entry for: ${card_id}, ${card_name}`)
 
         const res = await db.query(`
         INSERT INTO cards
-        (id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices)
+        (id, name, supertype, subtypes, hp, types, evolves_to, rules, attacks, weaknesses, retreat_cost, converted_retreat_cost, set_name, set_logo, number, artist, rarity, national_pokedex_numbers, legalities, images, tcgplayer, prices)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)`
         [id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices])
         const cardInfo = res.rows[0];
@@ -85,7 +85,32 @@ class Cards {
         const cardResponse = await db.query(query, queryValues);
 
         return cardResponse.rows;
-    }
+    };
+
+    /*
+    Get All Information on a Single Card 
+        query variable holds the base SQL query.
+        returns all information about card
+    */
+    static async getCardInfo(cardId) {
+        let query = await db.query(`SELECT * FROM cards WHERE id=${cardId}`)
+        return query.rows
+    };
+
+    /*
+    Card Pack Open Method
+
+    */
+    static async openCardPack(setName) {
+        //get all cards for the specific set
+        let query = await db.query(`SELECT * FROM cards WHERE set_name = ${setName}`);
+        let cardSet = query.rows;
+
+
+    };
+
+
+
 }
 
 module.exports = { Cards };
