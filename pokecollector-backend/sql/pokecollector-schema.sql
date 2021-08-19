@@ -4,28 +4,27 @@ CREATE TABLE users (
     password TEXT NOT NULL,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
-    email TEXT CHECK (position('@' IN email) > 1),
+    email TEXT UNIQUE CHECK (position('@' IN email) > 1),
     currency_amount INTEGER NOT NULL
     is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE trades (
     id PRIMARY KEY TEXT,
-    message_id
-        REFERENCES messages(id),
     seller_id TEXT NOT NULL
         REFERENCES users(id) ON DELETE CASCADE,
     buyer_id TEXT NOT NULL
         REFERENCES users(id) ON DELETE CASCADE,
-    seller_offer TEXT NOT NULL,
-    buyer_offer TEXT NOT NULL,
+    seller_offer TEXT[] NOT NULL,
+    buyer_offer TEXT[] NOT NULL,
+    completed BOOLEAN NOT NULL
 );
 
 CREATE TABLE messages (
     id PRIMARY KEY TEXT,
-    from_user_id TEXT NOT NULL
-        REFERENCES users(id) ON DELETE CASCADE,
-    to_user_id TEXT NOT NULL
+    trade_id
+        REFERENCES trades(id) ON DELETE CASCADE,
+    user_id TEXT NOT NULL
         REFERENCES users(id) ON DELETE CASCADE,
     message TEXT,
     timestamp NOT NULL
@@ -58,17 +57,16 @@ CREATE TABLE cards (
 
 CREATE TABLE users_cards (
     id PRIMARY KEY TEXT,
-    user_id TEXT NOT NULL
-        REFERENCES users(id) ON DELETE CASCADE,
+    username TEXT 
+        REFERENCES users(username) ON DELETE CASCADE,
     card_id TEXT NOT NULL
         REFERENCES cards(id) ON DELETE CASCADE,
-    number_owned INTEGER
 );
 
 CREATE TABLE users_decks (
     id PRIMARY KEY TEXT,
-    user_id TEXT NOT NULL
-        REFERENCES users(id) ON DELETE CASCADE,
+    username TEXT NOT NULL
+        REFERENCES users(username) ON DELETE CASCADE,
     deck_name TEXT NOT NULL
 );
 

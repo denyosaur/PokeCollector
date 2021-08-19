@@ -12,7 +12,7 @@ class User {
     method for authenticating a login 
     db.query user information to pull information from user
     if user object contains key-value pairs, use bcrypt to compare the hashed password and the user input password.
-    if bcrypt.compare passes, return user object: { username, first_name, last_name, email, is_admin, currencyAmount }
+    if bcrypt.compare passes, return user object: { id, username, first_name, last_name, email, is_admin, currencyAmount }
     else, throw UnauthorizedError
     */
     static async authenticate(username, password) {
@@ -42,19 +42,19 @@ class User {
         make a db.query to create user which returns information about the new user
         return new user object: { username, firstName, lastName, email, isAdmin, currencyAmount }
     */
-    static async register({ username, password, firstName, lastName, email, isAdmin }) {
-
-        const duplicateCheck = await db.query(`SELECT username FROM users WHERE username =$1`, [username]);
-
-        if (duplicateCheck.rows[0]) throw new BadRequestError(`Duplicate username: ${username}`);
+    static async register({ username, password, firstName, lastName, email, isAdmin = false }) {
+        const duplicateCheck = await db.query(`SELECT username, email 
+                                                       FROM users 
+                                                       WHERE username = $1 OR email = $2`, [username, email]);
+        if (duplicateCheck.rows[0]) throw new BadRequestError(`Duplicate username or email`);
 
         const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
         const result = await db.query(`INSERT INTO users
                                        (username, password, first_name, last_name, email, currency_amount, is_admin)
-                                       VALUES ($1,$2,$3,$4,$5,$6)
+                                       VALUES ($1,$2,$3,$4,$5,$6,$7)
                                        RETURNING username, first_name AS "firstName", last_name AS "lastName", email, is_Admin AS isAdmin, currency_amount AS "currencyAmount`,
-            [username, hashedPassword, firstName, lastName, email, currencyAmount, isAdmin]);
+            [username, hashedPassword, firstName, lastName, email, 1000, isAdmin]);
 
         const newUser = result.rows[0];
 
@@ -79,7 +79,6 @@ class User {
     Get User Info and the Cards they Own
         create a sql query to pull information form a user. Create the user variable to hold the information
         throw a NotFoundError if there are no matching usernames.
-        pull the card IDs of cards that the user owns and add it as an array to the user object.
         return the user object: { username, firstName, lastName, email, isAdmin, currencyAmount, [cardIds] }
     */
     static async getUser(username) {
@@ -97,14 +96,6 @@ class User {
 
         //throw NotFoundError if the username doesn't exist
         if (!user) throw new NotFoundError(`No user with username: ${username}`);
-
-        //pull the cards owned by users from the user_cards table
-        const cardsRes = await db.query(`SELECT c.card_id 
-                                         FROM users_cards 
-                                         WHERE user_id = $1`, [user.id]);
-
-        //add cards to user object
-        user.cardsOwned = cardsRes.rows.map(cards => cards.card_id);
 
         return user;
     };
@@ -145,6 +136,56 @@ class User {
         delete user.password;
         return user;
     };
+
+    /* Remove Amount from User's amount
+    make a db request to check if username exists. if not, throw NotFoundError
+    if user's current amount is greater than or equal to "amount to remove", make an update set the new amount
+        return object of username and new currencyAmount {username, currencyAmount}
+    else, throw BadRequestError for lack of funds
+    */
+    static async removeAmount(username, amount) {
+        const checkExists = await db.query(`SELECT username, currency_amount
+                                            FROM users
+                                            WHERE username=$1`, [username]);
+        if (!checkExists) throw new NotFoundError(`No user with username: ${username}`);
+
+        const user = checkExists.rows[0];
+
+        if (user.currency_amount >= amount) {
+            const newAmount = user.currency_amount - amount;
+            const updated = await db.query(`UPDATE users
+                                            SET currency_amount
+                                            WHERE username=$1
+                                            RETURNING username, currency_amount AS "currencyAmount"`, [newAmount]);
+            const updatedAmount = updated.rows[0];
+            return updatedAmount;
+        } else {
+            throw new BadRequestError(`Not Enough Funds`);
+        };
+    };
+
+    /*Add Amount to User's amount
+    make a db request to check if username exists. if not, throw NotFoundError
+    make an update query to increase user's currency_amount by the amount passed in
+    return object of username and new currencyAmount {username, currencyAmount}
+    */
+    static async addAmount(username, amount) {
+        const checkExists = await db.query(`SELECT username, currency_amount
+                                            FROM users
+                                            WHERE username=$1`, [username]);
+        if (!checkExists) throw new NotFoundError(`No user with username: ${username}`);
+
+        const user = checkExists.rows[0];
+        const newAmount = user.currency_amount + amount;
+
+        const updated = await db.query(`UPDATE users
+                                        SET currency_amount
+                                        WHERE username=$1
+                                        RETURNING username, currency_amount AS "currencyAmount"`, [newAmount]);
+        const updatedAmount = updated.rows[0];
+        return updatedAmount;
+    };
+
 
     /*
     Delete a User 

@@ -1,7 +1,6 @@
 "use strict";
 
 const db = require("../db");
-const { BadRequestError, NotFoundError } = require("../expressError");
 const { NotFoundError } = require("../expressErrors");
 
 class CardsInUsersDecks {

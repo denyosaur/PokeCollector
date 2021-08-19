@@ -10,17 +10,10 @@ class CardDeck {
     returns object: {username, deckName}
     */
     static async createDeck(username, deckName) {
-        const userResult = await db.query(`SELECT username, id FROM users WHERE username = $1`, [username]);
-        const user = userResult.rows[0];
-
-        //check if the deck exists
-        const duplicateCheck = await db.query(`SELECT deck_name FROM users_decks WHERE user_id = $1 AND deck_name=$2`, [user.id, deckName]);
-        if (duplicateCheck.rows[0]) throw new BadRequestError(`Duplicate Deckname: ${deckName}`);
-
         const deckResult = await db.query(`INSERT INTO users_decks
-                                     (user_id, deck_name)
-                                     VALUES ($1, $2)
-                                     RETURNING deck_name AS "deckName"`, [user.id, deckName]);
+                                           (username, deck_name)
+                                           VALUES ($1, $2)
+                                           RETURNING deck_name AS "deckName"`, [username, deckName]);
 
         const newDeck = deckResult.rows[0];
 
@@ -33,13 +26,10 @@ class CardDeck {
     returns array [deckName1, deckName2, ...]
     */
     static async getAllDecks(username) {
-        const userResult = await db.query(`SELECT username, id FROM users WHERE username = $1`, [username]);
-        const user = userResult.rows[0];
-
         const deckResult = await db.query(`SELECT deck_name 
-                                     FROM user_decks
-                                     WHERE user_id = $1
-                                     ORDER BY deck_name`, [user.id]);
+                                           FROM user_decks
+                                           WHERE username = $1
+                                           ORDER BY deck_name`, [username]);
 
         return deckResult.rows;
     };
@@ -72,17 +62,14 @@ class CardDeck {
     returns object: {username, deckName}
     */
     static async deleteDeck(username, deckName) {
-        const userResult = await db.query(`SELECT username, id FROM users WHERE username = $1`, [username]);
-        const user = userResult.rows[0];
-
         //check if the deck exists
         const duplicateCheck = await db.query(`SELECT deck_name FROM users_decks WHERE user_id = $1 AND deck_name = $2`, [user.id, deckName]);
         if (!duplicateCheck.rows[0]) throw new BadRequestError(`No Deck with Name: ${deckName}`);
 
         const result = await db.query(`DELETE 
                                        FROM users_decks
-                                       WHERE user_id = $1 AND deck_name = $2
-                                       RETURNING username, deck_name AS "deckName"`, [user.id, deckName]);
+                                       WHERE username = $1 AND deck_name = $2
+                                       RETURNING username, deck_name AS "deckName"`, [username, deckName]);
 
         const deck = result.rows[0];
 

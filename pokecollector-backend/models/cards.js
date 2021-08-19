@@ -2,14 +2,13 @@
 
 const db = require("../db");
 const { BadRequestError } = require("../expressError");
+const { NotFoundError } = require("../expressErrors");
 
 /*
 Model for cards in the DB. Holds related functions.
 */
 class Cards {
-
-    /*
-    Create a new card in the card_library table.
+    /*Create a new card in the card_library table.
         check if the card exists by searching for the card_id. card_id is taken from the IDs given by the API.
         if ID exists, return BadRequestError for duplicate.
         if card doesn't exist, create a new entry for card in card_library
@@ -18,8 +17,8 @@ class Cards {
         const duplicateCheck = await db.query(
             `SELECT card_id 
             FROM cards
-            WHERE card_id =$1`,
-            [card_id]);
+            WHERE card_name = $1 AND setName = $2`,
+            [name, setName]);
 
         //check if the new card is already in DB
         if (duplicateCheck.rows[0]) throw new BadRequestError(`Duplicate entry for: ${card_id}, ${card_name}`)
@@ -33,8 +32,24 @@ class Cards {
         return cardInfo;
     }
 
-    /*
-    method to find all the cards. can use search filters to filter out results
+    /*Delete a card in the card table.
+    make a delete query where id = cardId
+    if query is null, throw NotFoundError
+    return card ID
+    */
+    static async delete(cardId) {
+        const result = await db.query(`DELETE  
+                                     FROM cards
+                                     WHERE id = $1
+                                     RETURNING id`, [cardId]);
+
+        const card = result.rows[0];
+        if (!card) throw new NotFoundError(`No card with ID: ${cardId}`);
+
+        return card;
+    }
+
+    /*method to find all the cards. can use search filters to filter out results
     query variable holds the base SQL query. whereExpressions will hold the sql query strings for search filters. Where statements hold the syntax for db.query.
     queryValues holds the actual values that will be put in with the db.query
     */
@@ -87,14 +102,15 @@ class Cards {
         return cardResponse.rows;
     };
 
-    /*
-    Get All Information on a Single Card 
+    /*Get All Information on a Single Card 
         query variable holds the base SQL query.
         returns all information about card
     */
     static async getCardInfo(cardId) {
-        let query = await db.query(`SELECT * FROM cards WHERE id=${cardId}`)
-        return query.rows
+        let query = await db.query(`SELECT * FROM cards WHERE id = $1`, [cardId]);
+        if (!query) throw new NotFoundError(`No card with ID: ${cardId}`);
+
+        return query.rows;
     };
 
     /*
@@ -103,10 +119,10 @@ class Cards {
     */
     static async openCardPack(setName) {
         //get all cards for the specific set
-        let query = await db.query(`SELECT * FROM cards WHERE set_name = ${setName}`);
+        let query = await db.query(`SELECT * FROM cards WHERE set_name = $1`, [setName]);
         let cardSet = query.rows;
 
-
+        return cardSet;
     };
 
 
