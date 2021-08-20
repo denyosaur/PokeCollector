@@ -11,11 +11,9 @@ const UsersCards = require("../models/users_cards");
 const Users = require("../models/users");
 const router = new express.Router();
 
-const { BadRequestError } = require("../expressError");
-
-
 /* POST /store/:username => {newCards:[{id, username, cardId},...]}
 post new cards to users_cards table
+exmple cart = [id1, id2, id3, ...]
 */
 router.post("/:username/purchase", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
@@ -37,7 +35,9 @@ router.patch("/:username/removeFunds", ensureCorrectUserOrAdmin, async function 
         const price = req.body.price;
         const username = req.params.username;
 
-        const updatedAmount = Users.removeAmount(username, price);
+        const user = await Users.getUser(username);
+        const updatedAmount = await user.removeAmount(price);
+
         return res.json({ updatedAmount });
     } catch (error) {
         return next(error);
@@ -49,10 +49,12 @@ patch the current currency amount by the amount passed in
 */
 router.patch("/:username/addFunds", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
-        const additionalFunds = req.body.funds;
+        const addFunds = req.body.funds;
         const username = req.params.username;
 
-        const updatedAmount = Users.addAmount(username, additionalFunds);
+        const user = await Users.getUser(username);
+        const updatedAmount = await user.addAmount(addFunds);
+
         return res.json({ updatedAmount });
     } catch (error) {
         return next(error);

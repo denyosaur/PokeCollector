@@ -11,9 +11,9 @@ CREATE TABLE users (
 
 CREATE TABLE trades (
     id PRIMARY KEY TEXT,
-    seller_id TEXT NOT NULL
+    seller_name TEXT NOT NULL
         REFERENCES users(id) ON DELETE CASCADE,
-    buyer_id TEXT NOT NULL
+    buyer_name TEXT NOT NULL
         REFERENCES users(id) ON DELETE CASCADE,
     seller_offer TEXT[] NOT NULL,
     buyer_offer TEXT[] NOT NULL,
@@ -24,8 +24,8 @@ CREATE TABLE messages (
     id PRIMARY KEY TEXT,
     trade_id
         REFERENCES trades(id) ON DELETE CASCADE,
-    user_id TEXT NOT NULL
-        REFERENCES users(id) ON DELETE CASCADE,
+    username TEXT NOT NULL
+        REFERENCES users(username) ON DELETE CASCADE,
     message TEXT,
     timestamp NOT NULL
 )

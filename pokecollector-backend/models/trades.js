@@ -8,101 +8,91 @@ const UsersCards = require("./users_cards")
 const Messages = require("./messages")
 
 class Trades {
+    constructor(id, sellerName, buyerName, sellerOffer, buyerOffer, completed = false, messages = null) {
+        this.id = id;
+        this.sellerName = sellerName;
+        this.buyerName = buyerName;
+        this.sellerOffer = sellerOffer;
+        this.buyerOffer = buyerOffer;
+        this.completed = completed;
+        this.messages = messages;
+    };
+
     /* Create a Card Trade
     for each key in usernames, make a query request to fetch IDs. 
     make a db request to insert new trade into trades table
     create a new message using Messages.createMessage
     return new trade object {seller, buyer, sellerOffer, buyerOffer, {message}}
     */
-    static async createTrade(usernames, offers, message) {
+    static async createTrade(sellerName, buyerName, offers, message) {
         const { sellerOffer, buyerOffer } = offers;
-        let userIds = {};
-
-        for (let key in usernames) {
-            const user = await db.query(`SELECT id
-                                         FROM users
-                                         WHERE username = $1`, [usernames[key]]);
-            const id = user.rows[0];
-            userIds[key] = id;
-        };
-
 
         const tradeRes = await db.query(`INSERT INTO trades
-                                         (seller_ID, buyer_id, seller_offer, buyer_offer, completed)
+                                         (seller_name, buyer_name, seller_offer, buyer_offer, completed)
                                          VALUES ($1, $2, $3, $4, $5)
                                          RETURNING id,
-                                                   seller_id AS "sellerId", 
-                                                   buyer_id AS "buyerId", 
+                                                   seller_name AS "sellerName", 
+                                                   buyer_name AS "buyerName", 
                                                    seller_offer AS "sellerOffer",
                                                    buyer_offer AS "buyerOffer",
                                                    completed`,
-            [userIds.seller, userIds.buyer, sellerOffer, buyerOffer, false]);
-        const newTrade = tradeRes.rows[0];
+            [sellerName, buyerName, sellerOffer, buyerOffer, false]);
+        const { id, sellerName, buyerName, sellerOffer, buyerOffer, completed } = tradeRes.rows[0];
+        const newTrade = new Trades(id, sellerName, buyerName, sellerOffer, buyerOffer, completed);
 
-        const message = Messages.createMessage(newTrade.id, usernames.seller, message);
-        newTrade.message = message;
+        const message = await Messages.createMessage(id, sellerName, message);
+        newTrade.messages = message;
 
         return newTrade;
     };
 
     /* Get trade by ID
     make query to get all information of trade by ID. if trade doesn't exist, throw NotFoundError
-    check that only the username passed in belongs to either seller or buyer. if not throw BadRequestError
-    return the results {id, sellerId, buyerId, sellerOffer, buyerOffer, completed}
+    make query to get all messages related to trade and add to new Trades() object
+    return the results {id, sellerName, buyerName, sellerOffer, buyerOffer, completed, messages}
     */
-    static async getTrade(tradeId, username) {
-        const result = await db.query(`SELECT id, seller_id, buyer_id, seller_offer, buyer_offer, completed
+    static async getTrade(tradeId) {
+        const result = await db.query(`SELECT id, 
+                                              seller_name AS "sellerName", 
+                                              buyer_name AS "buyerName", 
+                                              seller_offer AS "sellerOffer", 
+                                              buyer_offer AS "buyerOffer", 
+                                              completed
                                        FROM trades 
-                                       WHERE id = $1
-                                       RETURNING id,
-                                                 seller_id AS "sellerId", 
-                                                 buyer_id AS "buyerId", 
-                                                 seller_offer AS "sellerOffer", 
-                                                 buyer_offer AS "buyerOffer",
-                                                 completed`, [tradeId]);
+                                       WHERE id = $1`, [tradeId]);
 
-        const trade = result.rows[0];
-        if (!trade) throw new NotFoundError(`No trade with ID: ${tradeId}`);
+        if (!result.rows[0]) throw new NotFoundError(`No trade with ID: ${tradeId}`);
 
-        const userInfo = await db.query(`SELECT id FROM users WHERE username = $1`, [username]);
-        const userId = userInfo.rows[0];
-        if (!(trade.sellerId === userId || trade.buyerId === userId)) throw new BadRequestError(`Incorrect user: ${username}`);
+        const { id, sellerName, buyerName, sellerOffer, buyerOffer, completed } = result.rows[0];
 
-        const messages = await db.query(`SELECT id, trade_id, user_id, message, timestamp
-                                         FROM messages
-                                         WHERE trade_id = $1
-                                         RETURNING id,
-                                                   trade_id AS "tradeId",
-                                                   user_id AS "userId",
-                                                   message
-                                                   timestamp`, [tradeId]);
-        trade.messages = messages.rows;
+        const trade = new Trades(id, sellerName, buyerName, sellerOffer, buyerOffer, completed);
+
+        const messages = await Messages.getAllMessages(tradeId);
+        trade.messages = messages;
 
         return trade;
     };
 
     /* Get All of User's Seller/Buyer Offers
-    make query to check that username exists. if it doesn't exist, throw a not found error
-    make a query request to get all trades where the user ID matches the seller_id or buyer_id
-    return the results [{id, sellerId, buyerId, sellerOffer, buyerOffer}, ...]
+    make a query request to get all trades where the username matches the seller_name or buyer_name
+    return the results [{id, sellerName, buyerName, sellerOffer, buyerOffer}, ...]
     */
     static async getAllUserTrades(username) {
-        const checkExist = await db.query(`SELECT id FROM users WHERE username = $1`, [usernames]);
-        if (!checkExist.rows[0]) throw new NotFoundError(`No user with username: ${username}`);
-
-        const user = checkExist.rows[0];
-
-        const result = await db.query(`SELECT id, seller_id, buyer_id, seller_offer, buyer_offer, completed
+        const result = await db.query(`SELECT id, 
+                                              seller_name AS "sellerName", 
+                                              buyer_name AS "buyerName", 
+                                              seller_offer AS "sellerOffer", 
+                                              buyer_offer AS "buyerOffer", 
+                                              completed
                                        FROM trades 
-                                       WHERE seller_id = $1 OR buyer_id = $2
-                                       RETURNING id,
-                                                 seller_id AS "sellerId", 
-                                                 buyer_id AS "buyerId", 
-                                                 seller_offer AS "sellerOffer", 
-                                                 buyer_offer AS "buyerOffer",
-                                                 completed`, [user, user]);
+                                       WHERE seller_name = $1 OR buyer_name = $1`, [username]);
 
-        return result.rows;
+        const trades = result.map(trade => {
+            const { id, sellerName, buyerName, sellerOffer, buyerOffer, completed } = trade;
+            return new Trades(id, sellerName, buyerName, sellerOffer, buyerOffer, completed);
+        });
+
+        return trades;
     };
 
     /* Accept Offer
@@ -113,25 +103,10 @@ class Trades {
     call usersCards.makeTrade() method from UsersCards to swap the crads between two users.
     return true
     */
-    static async acceptOffer(username, tradeId) {
-        const user = await db.query(`SELECT id FROM users WHERE username = $1`, [username]);
-        const userId = user.rows[0];
+    async acceptOffer(username) {
+        if (username !== this.buyerName) throw new BadRequestError(`This user made the offer: ${username}`);
 
-        const checkTradeExists = await db.query(`SELECT id, seller_id, buyer_id, seller_offer, buyer_offer, completed
-                                           FROM trades 
-                                           WHERE id = $1
-                                           RETURNING id,
-                                                 seller_id AS "sellerId", 
-                                                 buyer_id AS "buyerId", 
-                                                 seller_offer AS "sellerOffer", 
-                                                 buyer_offer AS "buyerOffer"`, [tradeId]);
-
-        const { id, sellerId, buyerId, sellerOffer, buyerOffer } = checkExist.rows[0];
-
-        if (!checkTradeExists.rows[0]) throw new NotFoundError(`No trade found with ID: ${tradeId}`);
-        if (userId !== buyerId) throw new BadRequestError(`User made the offer: ${userId}`);
-
-        UsersCards.makeTrade(sellerId, buyerId, sellerOffer, buyerOffer);
+        UsersCards.makeTrade(this.sellerName, this.buyerName, this.sellerOffer, this.buyerOffer);
 
         const finalize = await db.query(`UPDATE trades
                                          SET completed = $1
@@ -140,34 +115,37 @@ class Trades {
         return finalize.rows[0];
     };
 
-
     /* Update Trade Offer
-    changableData is an object that contains columns that can be updated.
+    data is an object that contains columns that can be updated.
     send the new data ({sellerOffer, buyerOffer}) and changableData to sqlForPartialUpdate for sql queries
-    indexId holds the last index of the values array. this wil be 
+    indexIdx holds the last index of the values array. this wil be used for the last spot in array
+    make a db query to update the seller and buyer offers
+    with the returning information, create a new Trades object
     */
-    static async updateOffer(id, data) {
+    async updateOffer(data) {
         const changableData = {
             sellerOffer: "seller_offer",
             buyerOffer: "buyer_offer"
         };
-        const { cols, values } = sqlForPartialUpdate(data, changableData);
+        const { setCols, values } = sqlForPartialUpdate(data, changableData);
 
         const indexId = "$" + (values.length + 1);
 
         const querySql = `UPDATE trades 
-                          SET ${cols} 
+                          SET ${setCols} 
                           WHERE id = ${indexId} 
-                          RETURNING seller_id AS "sellerId", 
-                                    buyer_id AS "buyerId", 
+                          RETURNING id,
+                                    seller_name AS "sellerName", 
+                                    buyer_name AS "buyerName", 
                                     seller_offer AS "sellerOffer", 
-                                    buyer_offer AS "buyerOffer"`;
-        const result = await db.query(querySql, [...values, id]);
-        const trade = result.rows[0];
+                                    buyer_offer AS "buyerOffer",
+                                    completed`;
+        const result = await db.query(querySql, [...values, this.id]);
 
-        if (!trade) throw new NotFoundError(`No trade with ID: ${id}`);
+        const { id, sellerName, buyerName, sellerOffer, buyerOffer, completed } = result.rows[0];
+        const updatedTrade = new Trades(id, sellerName, buyerName, sellerOffer, buyerOffer, completed);
 
-        return trade;
+        return updatedTrade;
     };
 
     /* Delete/Refuse Offer
@@ -175,15 +153,13 @@ class Trades {
     if offer is not found, throw NotFoundError
     return trade the id
     */
-    static async deleteOffer(id) {
+    async deleteOffer() {
         const result = await db.query(`DELETE
                                        FROM trades
                                        WHERE id = $1
-                                       RETURNING id`, [id]);
+                                       RETURNING id`, [this.id]);
 
         const trade = result.rows[0];
-
-        if (!trade) throw new NotFoundError(`No trade with ID: ${id}`);
 
         return trade;
     };

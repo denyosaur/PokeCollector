@@ -32,15 +32,19 @@ trades
     -ensureCorrectUserOrAdmin
         GET /trades/:username - get all of user's trades 
         GET /trades/:username/:tradeId - get trade information and messages
-        POST /trades/:username/:tradeId/sendMessage - send message
         POST /trades/:username/create - create a trade, create entry in trades and messages table
         POST /trades/:username/:tradeId/accept - switch cards between users. mark trade as completed
+        PATCH /trades/:username/:tradeId - update offers
         DELETE /trades/:username/:tradeId/delete - delete trade and messages
+        POST /trades/:username/:tradeId/sendMessage - send message
+        PATCH /trades/:username/:msgId - update a message
+        DELETE /trade/:username/:msgId - delete a message
 
 deck
     -ensureCorrectUserOrAdmin
         GET /decks/:username - get all of user's decks
         GET /decks/:username/:deckId - view a single deck and all cards in it
         POST /decks/:username - create a new deck
-        PATCH /decks/:username - edit name of deck
-        POST /decks/:username/:deckId 
+        PATCH /decks/:username/:deckId/updateName - edit name of deck
+        PATCH /decks/:username/:deckId - edit cards in deck
+        DELETE /decks/:username/:deckId - delete a deck

@@ -1,33 +1,39 @@
 "use strict";
 
 const db = require("../db");
-const { NotFoundError } = require("../expressError");
+
 
 class Messages {
+    constructor(id, tradeId, userId, message, timestamp) {
+        this.id = id;
+        this.tradeId = tradeId;
+        this.userId = userId;
+        this.message = message;
+        this.timestamp = timestamp;
+    };
+
     /*Create New Message
     create a variable to hold the current time
     make a query to get username's ID
     make db request to INSERT a new message row
     return newMessage object {tradeId, userId, message, timestamp}
     */
-    createMessage(tradeId, username, message) {
-        const userResult = db.query(`SELECT id FROM users WHERE username = $1`, [username]);
-        const userId = userResult.rows[0];
-
+    static async createMessage(tradeId, username, message) {
         const currTime = new Date();
 
         const createMessage = await db.query(`INSERT INTO messages
                                               (trade_id, user_id, message, timestamp)
                                               VALUES ($1, $2, $3, $4)
-                                              RETURNING trade_id AS "tradeId",
-                                                        user_id AS "userId"
-                                                        message
+                                              RETURNING id,
+                                                        trade_id AS "tradeId",
+                                                        username AS,
+                                                        message,
                                                         timestamp`,
-            [tradeId, userId, message, currTime]);
+            [tradeId, username, message, currTime]);
 
-        const newMessage = createMessage.rows[0];
+        const { id, tradeId, userId, message, timestamp } = createMessage.rows[0];
 
-        return newMessage;
+        return new Messages(id, tradeId, userId, message, timestamp);
     };
 
     /*Get All Messages by Trade ID
@@ -36,34 +42,69 @@ class Messages {
     select all messages where trade_id that matches the passed in ID
     return result [{tradeId, fromUserId, toUserId, message, timestamp}, ...]
     */
-    getMessages(tradeId) {
-        const checkTrade = await db.query(`SELECT id FROM trades WHERE id = $1`[tradeId]);
-        if (!checkTrade) throw new NotFoundError(`No Trade with ID of ${tradeId}`);
-
-        const result = await db.query(`SELECT trade_id, user_id, message, timestamp
+    static async getAllMessages(tradeId) {
+        const result = await db.query(`SELECT id,
+                                              trade_id AS "tradeId", 
+                                              username, 
+                                              message, 
+                                              timestamp
                                        FROM messages
-                                       WHERE trade_id = $1
-                                       RETURNING trade_id AS "trade_id",
-                                                 user_id AS "userId",
-                                                 message,
-                                                 timestamp`, [tradeId]);
+                                       WHERE trade_id = $1`, [tradeId]);
 
-        return result;
+        const messages = result.rows.map(msg => {
+            const { id, tradeId, userId, message, timestamp } = msg.rows;
+            return new Messages(id, tradeId, userId, message, timestamp);
+        })
+
+        return messages;
+    };
+
+    /*Get a Message
+    get message information by message ID
+    return message object {id, tradeId, userId, message, timestamp}
+   */
+    static async getMessage(msgId) {
+        const result = await db.query(`SELECT id,
+                                              trade_id AS "tradeId", 
+                                              username, 
+                                              message, 
+                                              timestamp
+                                       FROM messages
+                                       WHERE id = $1`, [msgId]);
+        const { id, tradeId, userId, message, timestamp } = result.rows[0];
+
+        return new Messages(id, tradeId, userId, message, timestamp);
+    };
+
+    /*Edit Message
+    newMsg should be text
+    make an update request to change the message and timestamp of the message
+    return new Messages object {id, tradeId, userId, message, timestamp}
+    */
+    async editMessage(newMsg) {
+        const currTime = new Date();
+        const result = await db.query(`UPDATE messages
+                                       SET message = $1, timestamp = $2
+                                       WHERE id = $3
+                                       RETURNING id,
+                                                 trade_id AS "tradeId", 
+                                                 username, 
+                                                 message, 
+                                                 timestamp`, [newMsg, currTime, this.id]);
+        const { id, tradeId, userId, message, timestamp } = result.rows[0];
+
+        return new Messages(id, tradeId, userId, message, timestamp);
     };
 
     /*Create New Message
-    check message table if entry with messageId exists. if not, throw NotFoundError
-    else make a DELETE query to delete row with messageId as ID
+    make a DELETE query to delete row with messageId as ID
     return message id
     */
-    deleteMessages(messageId) {
-        const checkMessage = await db.query(`SELECT id FROM messages WHERE id = $1`[messageId]);
-        if (!checkMessage) throw new NotFoundError(`No Message with ID of ${messageId}`);
-
+    async deleteMessage() {
         const result = await db.query(`DELETE 
                                        FROM messages
                                        WHERE id = $1
-                                       RETURNING id`, [messageId]);
+                                       RETURNING id`, [this.id]);
         const message = result.rows[0];
 
         return message;

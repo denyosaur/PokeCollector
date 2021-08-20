@@ -61,7 +61,10 @@ return json object
 router.delete("/:username", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
         const username = req.params.username;
-        const user = await User.deleteUser(username);
+        const user = await User.getUser(username);
+
+        await user.delete();
+
         return res.json({ deleted: user });
     } catch (error) {
         return next(error);
