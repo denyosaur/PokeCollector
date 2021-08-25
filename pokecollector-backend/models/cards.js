@@ -8,7 +8,7 @@ const { NotFoundError, BadRequestError } = require("../expressError");
 /* Model for cards in the DB. Holds related functions.*/
 
 class Cards {
-    constructor(id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices) {
+    constructor(id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices) {
         this.id = id;
         this.name = name;
         this.supertype = supertype;
@@ -19,6 +19,7 @@ class Cards {
         this.rules = rules;
         this.attacks = attacks;
         this.weaknesses = weaknesses;
+        this.resistances = resistances;
         this.retreatCost = retreatCost;
         this.convertedRetreatCost = convertedRetreatCost;
         this.setName = setName;
@@ -57,6 +58,7 @@ class Cards {
                 "rules": card.rules,
                 "attacks": card.attacks,
                 "weaknesses": card.weaknesses,
+                "resistances": card.resistances,
                 "retreatCost": card.retreatCost,
                 "convertedRetreatCost": card.convertedRetreatCost,
                 "setName": card.set.name,
@@ -92,8 +94,8 @@ class Cards {
 
         const res = await db.query(`
         INSERT INTO cards
-        (id, name, supertype, subtypes, hp, types, evolves_to, rules, attacks, weaknesses, retreat_cost, converted_retreat_cost, set_name, set_logo, number, artist, rarity, national_pokedex_numbers, legalities, images, tcgplayer, prices)
-        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
+        (id, name, supertype, subtypes, hp, types, evolves_to, rules, attacks, weaknesses, resistances, retreat_cost, converted_retreat_cost, set_name, set_logo, number, artist, rarity, national_pokedex_numbers, legalities, images, tcgplayer, prices)
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)
         RETURNING id,
                   name,
                   supertype,
@@ -104,6 +106,7 @@ class Cards {
                   rules,
                   attacks,
                   weaknesses,
+                  resistances,
                   retreat_cost AS "retreatCost",
                   converted_retreat_cost AS "convertedRetreatCost",
                   set_name AS "setName",
@@ -139,6 +142,7 @@ class Cards {
                             rules,
                             attacks,
                             weaknesses,
+                            resistances,
                             retreat_cost AS "retreatCost",
                             converted_retreat_cost AS "convertedRetreatCost",
                             set_name AS "setName",
@@ -218,6 +222,7 @@ class Cards {
                                            rules,
                                            attacks,
                                            weaknesses,
+                                           resistances,
                                            retreat_cost AS "retreatCost",
                                            converted_retreat_cost AS "convertedRetreatCost",
                                            set_name AS "setName",
@@ -234,8 +239,8 @@ class Cards {
                                    WHERE id = $1`, [cardId]);
         if (!query) throw new NotFoundError(`No card with ID: ${cardId} `);
 
-        const { id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices } = query.rows[0];
-        return new Card(id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices);
+        const { id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices } = query.rows[0];
+        return new Card(id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices);
     };
 
     /*Delete a card in the card table.
