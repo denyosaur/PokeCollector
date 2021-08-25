@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "Update deck",
+    "description": "Updating a deck name",
+    "properties": {
+        "deckId": {
+            "description": "New name of deck",
+            "type": "integer",
+            "minimum": 0
+        },
+        "newName": {
+            "description": "Username of new deck owner",
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 20
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "newName",
+        "deckId"
+    ]
+}

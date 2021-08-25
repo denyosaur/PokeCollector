@@ -3,7 +3,7 @@
 const db = require("../db");
 const { NotFoundError } = require("../expressError");
 
-//class to handle methods for cards that users own
+/* Functions for cards that users own */
 
 class UsersCards {
     constructor(id, cardId, username, cardName = null, setName = null, setLogo = null, images = null, prices = null) {
@@ -30,9 +30,9 @@ class UsersCards {
                                                 cards.set_logo AS "setLogo", 
                                                 cards.images, 
                                                 cards.prices
-                                         FROM users_cards u
-                                         INNER JOIN cards c ON u.card_id = cards.id
-                                         WHERE u.username = $1`[username]);
+                                            FROM users_cards u
+                                            INNER JOIN cards ON u.card_id = cards.id
+                                            WHERE u.username = $1`, [username]);
         const cards = cardsResult.rows.map(card => {
             const { id, cardId, username, cardName, setName, setLogo, images, prices } = card;
             return new UsersCards(id, cardId, username, cardName, setName, setLogo, images, prices);

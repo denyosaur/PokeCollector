@@ -1,0 +1,724 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "Card Schema",
+    "description": "Schema for new cards pulled from pokemon tcgh API.",
+    "default": {},
+    "examples": [
+        {
+            "id": "swsh4-25",
+            "name": "Charizard",
+            "supertype": "Pokémon",
+            "subtypes": [
+                "Stage 2"
+            ],
+            "hp": "170",
+            "types": [
+                "Fire"
+            ],
+            "evolvesFrom": "Charmeleon",
+            "abilities": [
+                {
+                    "name": "Battle Sense",
+                    "text": "Once during your turn, you may look at the top 3 cards of your deck and put 1 of them into your hand. Discard the other cards.",
+                    "type": "Ability"
+                }
+            ],
+            "attacks": [
+                {
+                    "name": "Royal Blaze",
+                    "cost": [
+                        "Fire",
+                        "Fire"
+                    ],
+                    "convertedEnergyCost": 2,
+                    "damage": "100+",
+                    "text": "This attack does 50 more damage for each Leon card in your discard pile."
+                }
+            ],
+            "weaknesses": [
+                {
+                    "type": "Water",
+                    "value": "×2"
+                }
+            ],
+            "retreatCost": [
+                "Colorless",
+                "Colorless",
+                "Colorless"
+            ],
+            "convertedRetreatCost": 3,
+            "set": {
+                "id": "swsh4",
+                "name": "Vivid Voltage",
+                "series": "Sword & Shield",
+                "printedTotal": 185,
+                "total": 203,
+                "legalities": {
+                    "unlimited": "Legal",
+                    "standard": "Legal",
+                    "expanded": "Legal"
+                },
+                "ptcgoCode": "VIV",
+                "releaseDate": "2020/11/13",
+                "updatedAt": "2020/11/13 16:20:00",
+                "images": {
+                    "symbol": "https://images.pokemontcg.io/swsh4/symbol.png",
+                    "logo": "https://images.pokemontcg.io/swsh4/logo.png"
+                }
+            },
+            "number": "25",
+            "artist": "Ryuta Fuse",
+            "rarity": "Rare",
+            "flavorText": "It spits fire that is hot enough to melt boulders. It may cause forest fires by blowing flames.",
+            "nationalPokedexNumbers": [
+                6
+            ],
+            "legalities": {
+                "unlimited": "Legal",
+                "standard": "Legal",
+                "expanded": "Legal"
+            },
+            "images": {
+                "small": "https://images.pokemontcg.io/swsh4/25.png",
+                "large": "https://images.pokemontcg.io/swsh4/25_hires.png"
+            },
+            "tcgplayer": {
+                "url": "https://prices.pokemontcg.io/tcgplayer/swsh4-25",
+                "updatedAt": "2021/08/04",
+                "prices": {
+                    "normal": {
+                        "low": 1.73,
+                        "mid": 3.54,
+                        "high": 12.99,
+                        "market": 2.82,
+                        "directLow": 3.93
+                    },
+                    "reverseHolofoil": {
+                        "low": 3,
+                        "mid": 8.99,
+                        "high": 100,
+                        "market": 3.89,
+                        "directLow": 4.46
+                    }
+                }
+            },
+            "cardmarket": {
+                "url": "https://prices.pokemontcg.io/cardmarket/swsh4-25",
+                "updatedAt": "2021/08/04",
+                "prices": {
+                    "averageSellPrice": 9.38,
+                    "lowPrice": 8.95,
+                    "trendPrice": 10.29,
+                    "germanProLow": null,
+                    "suggestedPrice": null,
+                    "reverseHoloSell": null,
+                    "reverseHoloLow": null,
+                    "reverseHoloTrend": null,
+                    "lowPriceExPlus": 8.95,
+                    "avg1": 9.95,
+                    "avg7": 9.35,
+                    "avg30": 11.31,
+                    "reverseHoloAvg1": null,
+                    "reverseHoloAvg7": null,
+                    "reverseHoloAvg30": null
+                }
+            }
+        }
+    ],
+    "required": [
+        "id",
+        "name",
+        "supertype",
+        "subtypes",
+        "hp",
+        "types",
+        "evolvesFrom",
+        "abilities",
+        "attacks",
+        "weaknesses",
+        "retreatCost",
+        "convertedRetreatCost",
+        "set",
+        "number",
+        "artist",
+        "rarity",
+        "flavorText",
+        "nationalPokedexNumbers",
+        "legalities",
+        "images",
+        "tcgplayer",
+        "cardmarket"
+    ],
+    "properties": {
+        "id": {
+            "$id": "#/properties/id",
+            "type": "string",
+            "title": "The id schema"
+        },
+        "name": {
+            "$id": "#/properties/name",
+            "type": "string",
+            "title": "The name schema"
+        },
+        "supertype": {
+            "$id": "#/properties/supertype",
+            "type": "string",
+            "title": "The supertype schema"
+        },
+        "subtypes": {
+            "$id": "#/properties/subtypes",
+            "type": "array",
+            "title": "The subtypes schema",
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/subtypes/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/subtypes/items/anyOf/0",
+                        "type": "string",
+                        "title": "The first anyOf schema"
+                    }
+                ]
+            }
+        },
+        "hp": {
+            "$id": "#/properties/hp",
+            "type": "string",
+            "title": "The hp schema"
+        },
+        "types": {
+            "$id": "#/properties/types",
+            "type": "array",
+            "title": "The types schema",
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/types/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/types/items/anyOf/0",
+                        "type": "string",
+                        "title": "The first anyOf schema"
+                    }
+                ]
+            }
+        },
+        "evolvesFrom": {
+            "$id": "#/properties/evolvesFrom",
+            "type": "string",
+            "title": "The evolvesFrom schema"
+        },
+        "abilities": {
+            "$id": "#/properties/abilities",
+            "type": "array",
+            "title": "The abilities schema",
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/abilities/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/abilities/items/anyOf/0",
+                        "type": "object",
+                        "title": "The first anyOf schema",
+                        "properties": {
+                            "name": {
+                                "$id": "#/properties/abilities/items/anyOf/0/properties/name",
+                                "type": "string",
+                                "title": "The name schema"
+                            },
+                            "text": {
+                                "$id": "#/properties/abilities/items/anyOf/0/properties/text",
+                                "type": "string",
+                                "title": "The text schema"
+                            },
+                            "type": {
+                                "$id": "#/properties/abilities/items/anyOf/0/properties/type",
+                                "type": "string",
+                                "title": "The type schema"
+                            }
+                        },
+                        "additionalProperties": true
+                    }
+                ]
+            }
+        },
+        "attacks": {
+            "$id": "#/properties/attacks",
+            "type": "array",
+            "title": "The attacks schema",
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/attacks/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/attacks/items/anyOf/0",
+                        "type": "object",
+                        "title": "The first anyOf schema",
+                        "properties": {
+                            "name": {
+                                "$id": "#/properties/attacks/items/anyOf/0/properties/name",
+                                "type": "string",
+                                "title": "The name schema"
+                            },
+                            "cost": {
+                                "$id": "#/properties/attacks/items/anyOf/0/properties/cost",
+                                "type": "array",
+                                "title": "The cost schema",
+                                "additionalItems": true,
+                                "items": {
+                                    "$id": "#/properties/attacks/items/anyOf/0/properties/cost/items",
+                                    "anyOf": [
+                                        {
+                                            "$id": "#/properties/attacks/items/anyOf/0/properties/cost/items/anyOf/0",
+                                            "type": "string",
+                                            "title": "The first anyOf schema"
+                                        }
+                                    ]
+                                }
+                            },
+                            "convertedEnergyCost": {
+                                "$id": "#/properties/attacks/items/anyOf/0/properties/convertedEnergyCost",
+                                "type": "integer",
+                                "title": "The convertedEnergyCost schema"
+                            },
+                            "damage": {
+                                "$id": "#/properties/attacks/items/anyOf/0/properties/damage",
+                                "type": "string",
+                                "title": "The damage schema"
+                            },
+                            "text": {
+                                "$id": "#/properties/attacks/items/anyOf/0/properties/text",
+                                "type": "string",
+                                "title": "The text schema"
+                            }
+                        },
+                        "additionalProperties": true
+                    }
+                ]
+            }
+        },
+        "weaknesses": {
+            "$id": "#/properties/weaknesses",
+            "type": "array",
+            "title": "The weaknesses schema",
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/weaknesses/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/weaknesses/items/anyOf/0",
+                        "type": "object",
+                        "title": "The first anyOf schema",
+                        "properties": {
+                            "type": {
+                                "$id": "#/properties/weaknesses/items/anyOf/0/properties/type",
+                                "type": "string",
+                                "title": "The type schema"
+                            },
+                            "value": {
+                                "$id": "#/properties/weaknesses/items/anyOf/0/properties/value",
+                                "type": "string",
+                                "title": "The value schema"
+                            }
+                        },
+                        "additionalProperties": true
+                    }
+                ]
+            }
+        },
+        "retreatCost": {
+            "$id": "#/properties/retreatCost",
+            "type": "array",
+            "title": "The retreatCost schema",
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/retreatCost/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/retreatCost/items/anyOf/0",
+                        "type": "string",
+                        "title": "The first anyOf schema"
+                    }
+                ]
+            }
+        },
+        "convertedRetreatCost": {
+            "$id": "#/properties/convertedRetreatCost",
+            "type": "integer",
+            "title": "The convertedRetreatCost schema"
+        },
+        "set": {
+            "$id": "#/properties/set",
+            "type": "object",
+            "title": "The set schema",
+            "properties": {
+                "id": {
+                    "$id": "#/properties/set/properties/id",
+                    "type": "string",
+                    "title": "The id schema"
+                },
+                "name": {
+                    "$id": "#/properties/set/properties/name",
+                    "type": "string",
+                    "title": "The name schema"
+                },
+                "series": {
+                    "$id": "#/properties/set/properties/series",
+                    "type": "string",
+                    "title": "The series schema"
+                },
+                "printedTotal": {
+                    "$id": "#/properties/set/properties/printedTotal",
+                    "type": "integer",
+                    "title": "The printedTotal schema"
+                },
+                "total": {
+                    "$id": "#/properties/set/properties/total",
+                    "type": "integer",
+                    "title": "The total schema"
+                },
+                "legalities": {
+                    "$id": "#/properties/set/properties/legalities",
+                    "type": "object",
+                    "title": "The legalities schema",
+                    "properties": {
+                        "unlimited": {
+                            "$id": "#/properties/set/properties/legalities/properties/unlimited",
+                            "type": "string",
+                            "title": "The unlimited schema"
+                        },
+                        "standard": {
+                            "$id": "#/properties/set/properties/legalities/properties/standard",
+                            "type": "string",
+                            "title": "The standard schema"
+                        },
+                        "expanded": {
+                            "$id": "#/properties/set/properties/legalities/properties/expanded",
+                            "type": "string",
+                            "title": "The expanded schema"
+                        }
+                    },
+                    "additionalProperties": true
+                },
+                "ptcgoCode": {
+                    "$id": "#/properties/set/properties/ptcgoCode",
+                    "type": "string",
+                    "title": "The ptcgoCode schema"
+                },
+                "releaseDate": {
+                    "$id": "#/properties/set/properties/releaseDate",
+                    "type": "string",
+                    "title": "The releaseDate schema"
+                },
+                "updatedAt": {
+                    "$id": "#/properties/set/properties/updatedAt",
+                    "type": "string",
+                    "title": "The updatedAt schema"
+                },
+                "images": {
+                    "$id": "#/properties/set/properties/images",
+                    "type": "object",
+                    "title": "The images schema",
+                    "examples": [
+                        {
+                            "symbol": "https://images.pokemontcg.io/swsh4/symbol.png",
+                            "logo": "https://images.pokemontcg.io/swsh4/logo.png"
+                        }
+                    ],
+                    "properties": {
+                        "symbol": {
+                            "$id": "#/properties/set/properties/images/properties/symbol",
+                            "type": "string",
+                            "title": "The symbol schema",
+                            "examples": [
+                                "https://images.pokemontcg.io/swsh4/symbol.png"
+                            ]
+                        },
+                        "logo": {
+                            "$id": "#/properties/set/properties/images/properties/logo",
+                            "type": "string",
+                            "title": "The logo schema",
+                            "examples": [
+                                "https://images.pokemontcg.io/swsh4/logo.png"
+                            ]
+                        }
+                    },
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true
+        },
+        "number": {
+            "$id": "#/properties/number",
+            "type": "string",
+            "title": "The number schema"
+        },
+        "artist": {
+            "$id": "#/properties/artist",
+            "type": "string",
+            "title": "The artist schema"
+        },
+        "rarity": {
+            "$id": "#/properties/rarity",
+            "type": "string",
+            "title": "The rarity schema"
+        },
+        "flavorText": {
+            "$id": "#/properties/flavorText",
+            "type": "string",
+            "title": "The flavorText schema"
+        },
+        "nationalPokedexNumbers": {
+            "$id": "#/properties/nationalPokedexNumbers",
+            "type": "array",
+            "title": "The nationalPokedexNumbers schema",
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/nationalPokedexNumbers/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/nationalPokedexNumbers/items/anyOf/0",
+                        "type": "integer",
+                        "title": "The first anyOf schema"
+                    }
+                ]
+            }
+        },
+        "legalities": {
+            "$id": "#/properties/legalities",
+            "type": "object",
+            "title": "The legalities schema",
+            "properties": {
+                "unlimited": {
+                    "$id": "#/properties/legalities/properties/unlimited",
+                    "type": "string",
+                    "title": "The unlimited schema"
+                },
+                "standard": {
+                    "$id": "#/properties/legalities/properties/standard",
+                    "type": "string",
+                    "title": "The standard schema"
+                },
+                "expanded": {
+                    "$id": "#/properties/legalities/properties/expanded",
+                    "type": "string",
+                    "title": "The expanded schema"
+                }
+            },
+            "additionalProperties": true
+        },
+        "images": {
+            "$id": "#/properties/images",
+            "type": "object",
+            "title": "The images schema",
+            "properties": {
+                "small": {
+                    "$id": "#/properties/images/properties/small",
+                    "type": "string",
+                    "title": "The small schema"
+                },
+                "large": {
+                    "$id": "#/properties/images/properties/large",
+                    "type": "string",
+                    "title": "The large schema"
+                }
+            },
+            "additionalProperties": true
+        },
+        "tcgplayer": {
+            "$id": "#/properties/tcgplayer",
+            "type": "object",
+            "title": "The tcgplayer schema",
+            "properties": {
+                "url": {
+                    "$id": "#/properties/tcgplayer/properties/url",
+                    "type": "string",
+                    "title": "The url schema"
+                },
+                "updatedAt": {
+                    "$id": "#/properties/tcgplayer/properties/updatedAt",
+                    "type": "string",
+                    "title": "The updatedAt schema"
+                },
+                "prices": {
+                    "$id": "#/properties/tcgplayer/properties/prices",
+                    "type": "object",
+                    "title": "The prices schema",
+                    "properties": {
+                        "normal": {
+                            "$id": "#/properties/tcgplayer/properties/prices/properties/normal",
+                            "type": "object",
+                            "title": "The normal schema",
+                            "properties": {
+                                "low": {
+                                    "$id": "#/properties/tcgplayer/properties/prices/properties/normal/properties/low",
+                                    "type": "number",
+                                    "title": "The low schema"
+                                },
+                                "mid": {
+                                    "$id": "#/properties/tcgplayer/properties/prices/properties/normal/properties/mid",
+                                    "type": "number",
+                                    "title": "The mid schema"
+                                },
+                                "high": {
+                                    "$id": "#/properties/tcgplayer/properties/prices/properties/normal/properties/high",
+                                    "type": "number",
+                                    "title": "The high schema"
+                                },
+                                "market": {
+                                    "$id": "#/properties/tcgplayer/properties/prices/properties/normal/properties/market",
+                                    "type": "number",
+                                    "title": "The market schema"
+                                },
+                                "directLow": {
+                                    "$id": "#/properties/tcgplayer/properties/prices/properties/normal/properties/directLow",
+                                    "type": "number",
+                                    "title": "The directLow schema"
+                                }
+                            },
+                            "additionalProperties": true
+                        },
+                        "reverseHolofoil": {
+                            "$id": "#/properties/tcgplayer/properties/prices/properties/reverseHolofoil",
+                            "type": "object",
+                            "title": "The reverseHolofoil schema",
+                            "properties": {
+                                "low": {
+                                    "$id": "#/properties/tcgplayer/properties/prices/properties/reverseHolofoil/properties/low",
+                                    "type": "integer",
+                                    "title": "The low schema"
+                                },
+                                "mid": {
+                                    "$id": "#/properties/tcgplayer/properties/prices/properties/reverseHolofoil/properties/mid",
+                                    "type": "number",
+                                    "title": "The mid schema"
+                                },
+                                "high": {
+                                    "$id": "#/properties/tcgplayer/properties/prices/properties/reverseHolofoil/properties/high",
+                                    "type": "integer",
+                                    "title": "The high schema"
+                                },
+                                "market": {
+                                    "$id": "#/properties/tcgplayer/properties/prices/properties/reverseHolofoil/properties/market",
+                                    "type": "number",
+                                    "title": "The market schema"
+                                },
+                                "directLow": {
+                                    "$id": "#/properties/tcgplayer/properties/prices/properties/reverseHolofoil/properties/directLow",
+                                    "type": "number",
+                                    "title": "The directLow schema"
+                                }
+                            },
+                            "additionalProperties": true
+                        }
+                    },
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true
+        },
+        "cardmarket": {
+            "$id": "#/properties/cardmarket",
+            "type": "object",
+            "title": "The cardmarket schema",
+            "properties": {
+                "url": {
+                    "$id": "#/properties/cardmarket/properties/url",
+                    "type": "string",
+                    "title": "The url schema"
+                },
+                "updatedAt": {
+                    "$id": "#/properties/cardmarket/properties/updatedAt",
+                    "type": "string",
+                    "title": "The updatedAt schema"
+                },
+                "prices": {
+                    "$id": "#/properties/cardmarket/properties/prices",
+                    "type": "object",
+                    "title": "The prices schema",
+                    "properties": {
+                        "averageSellPrice": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/averageSellPrice",
+                            "type": "number",
+                            "title": "The averageSellPrice schema"
+                        },
+                        "lowPrice": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/lowPrice",
+                            "type": "number",
+                            "title": "The lowPrice schema"
+                        },
+                        "trendPrice": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/trendPrice",
+                            "type": "number",
+                            "title": "The trendPrice schema"
+                        },
+                        "germanProLow": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/germanProLow",
+                            "type": "null",
+                            "title": "The germanProLow schema"
+                        },
+                        "suggestedPrice": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/suggestedPrice",
+                            "type": "null",
+                            "title": "The suggestedPrice schema"
+                        },
+                        "reverseHoloSell": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/reverseHoloSell",
+                            "type": "null",
+                            "title": "The reverseHoloSell schema"
+                        },
+                        "reverseHoloLow": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/reverseHoloLow",
+                            "type": "null",
+                            "title": "The reverseHoloLow schema"
+                        },
+                        "reverseHoloTrend": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/reverseHoloTrend",
+                            "type": "null",
+                            "title": "The reverseHoloTrend schema"
+                        },
+                        "lowPriceExPlus": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/lowPriceExPlus",
+                            "type": "number",
+                            "title": "The lowPriceExPlus schema"
+                        },
+                        "avg1": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/avg1",
+                            "type": "number",
+                            "title": "The avg1 schema"
+                        },
+                        "avg7": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/avg7",
+                            "type": "number",
+                            "title": "The avg7 schema"
+                        },
+                        "avg30": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/avg30",
+                            "type": "number",
+                            "title": "The avg30 schema"
+                        },
+                        "reverseHoloAvg1": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/reverseHoloAvg1",
+                            "type": "null",
+                            "title": "The reverseHoloAvg1 schema"
+                        },
+                        "reverseHoloAvg7": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/reverseHoloAvg7",
+                            "type": "null",
+                            "title": "The reverseHoloAvg7 schema"
+                        },
+                        "reverseHoloAvg30": {
+                            "$id": "#/properties/cardmarket/properties/prices/properties/reverseHoloAvg30",
+                            "type": "null",
+                            "title": "The reverseHoloAvg30 schema"
+                        }
+                    },
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true
+        }
+    },
+    "additionalProperties": true
+}

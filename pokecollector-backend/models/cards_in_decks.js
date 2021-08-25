@@ -3,6 +3,8 @@
 const db = require("../db");
 const { NotFoundError } = require("../expressErrors");
 
+/* Functions for Cards in Decks */
+
 class CardsInDecks {
     constructor(id, name, images, setName, setLogo) {
         this.id = id;
@@ -47,7 +49,7 @@ class CardsInDecks {
     make insert into query to add the cards to the deck
     return added cards [{deckId, cardId},...]
     */
-    static async addCards(deckId, addArr) {
+    static async _addCards(deckId, addArr) {
         const lastIdx = addArr.length + 1;
         const sqlValues = addArr.map((cardId, idx) => {
             return `($${lastIdx}, $${idx})`
@@ -69,7 +71,7 @@ class CardsInDecks {
     make delete query to remove the cards to the deck
     return removed cards [{deckId, cardId},...]
     */
-    static async removeCards(deckId, removeArr) {
+    static async _removeCards(deckId, removeArr) {
         const lastIdx = removeArr.length + 1;
         const sqlValues = addArr.map((cardId, idx) => {
             return `(deck_id = $${lastIdx} AND card_id = $${idx})`
@@ -83,6 +85,22 @@ class CardsInDecks {
         const removedCards = remove.rows[0];
 
         return removedCards;
+    };
+
+    /*Update and remove cards from deck - to be used in Decks model
+    call this._removeCards and this._addCards from this model. 
+    This method provides functionality for both methods
+    
+    return removed cards {
+        removed:[{deckId, cardId},...], 
+        added:[{deckId, cardId},...]
+    }
+    */
+    static async updateDeckCards(deckId, removeArr, addArr) {
+        const removed = this._removeCards(deckId, removeArr);
+        const added = this._addCards(deckId, addArr);
+
+        return { removed, added };
     };
 };
 

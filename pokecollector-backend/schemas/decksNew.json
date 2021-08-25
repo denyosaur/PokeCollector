@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "New Deck",
+    "description": "A new deck created by user",
+    "properties": {
+        "deckName": {
+            "description": "Name of new deck",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+        },
+        "username": {
+            "description": "Username of new deck owner",
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "deckName",
+        "username"
+    ]
+}

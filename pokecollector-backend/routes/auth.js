@@ -2,15 +2,17 @@
 
 /* Routes for Authentication */
 
-const jsonschema = require("jsonschema");
+const express = require("express");
 
 const User = require("../models/user");
-const express = require("express");
-const router = new express.Router();
+
 const { createToken } = require("../helpers/tokens");
+
+const { jsonValidate } = require("../helpers/jsonvalidator-helpers");
 const userAuthSchema = require("../schemas/userAuth.json");
-const userRegisterSchema = require("../schemas/userRegister.json");
-const { BadRequestError } = require("../expressError");
+const userNewSchema = require("../schemas/userNew.json");
+
+const router = new express.Router();
 
 /* POST /auth/token: {username,password} => token 
 validate that the username and password are in the right format using jsonschema. if not valid, throw BadRequestError
@@ -20,12 +22,7 @@ create a token with the username
 */
 router.post("/token", async function (req, res, next) {
     try {
-        //validate the username and password object schema
-        const validate = jsonschema.validate(req.body, userAuthSchema);
-        if (!validate.valid) {
-            const errors = validate.errors.map(err => err.stack);
-            throw new BadRequestError(errors);
-        };
+        jsonValidate(req.body, userAuthSchema);//validate username and password object schema
 
         //check that username exists and password is correct
         const { username, password } = req.body;
@@ -47,12 +44,7 @@ return token and 201 status
 */
 router.post("/register", async function (req, res, next) {
     try {
-        //validate the registration object schema
-        const validate = jsonschema.validate(req.body, userRegisterSchema);
-        if (!validate.valid) {
-            const errors = validate.errors.map(err => err.stack);
-            throw new BadRequestError(errors);
-        };
+        jsonValidate(req.body, userNewSchema);//validate username and password object schema
 
         //check that username/email isnt a duplicate and register user
         const newUser = await User.register({ ...req.body, isAdmin: false });

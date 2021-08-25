@@ -1,14 +1,17 @@
 "use strict";
 
-/* Routes for Authentication */
+/* Routes for Purchasing and Removing/Adding Funds */
 
-const jsonschema = require("jsonschema");
-const cardSchema = require("../schemas/cardSchema.json");
+const express = require("express");
 
 const { ensureCorrectUserOrAdmin } = require("../middleware/auth");
-const express = require("express");
+
 const UsersCards = require("../models/users_cards");
 const Users = require("../models/users");
+
+const { jsonValidate } = require("../helpers/jsonvalidator-helpers");
+const storeFundsUpdate = require("../schemas/storeFundsUpdate.json");
+
 const router = new express.Router();
 
 /* POST /store/:username => {newCards:[{id, username, cardId},...]}
@@ -17,8 +20,9 @@ exmple cart = [id1, id2, id3, ...]
 */
 router.post("/:username/purchase", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
-        const cart = req.body.cart;
-        const username = req.params.username;
+        const { cart } = req.body;
+        const { username } = req.params;
+
         const newCards = UsersCards.createCardsToUser(username, cart);
 
         return res.status(201).json({ newCards });
@@ -32,11 +36,13 @@ patch the current currency amount by the amount passed in
 */
 router.patch("/:username/removeFunds", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
-        const price = req.body.price;
-        const username = req.params.username;
+        jsonValidate(req.body, storeFundsUpdate); //json validator helper function
+
+        const { funds } = req.body;
+        const { username } = req.params;
 
         const user = await Users.getUser(username);
-        const updatedAmount = await user.removeAmount(price);
+        const updatedAmount = await user.removeAmount(funds);
 
         return res.json({ updatedAmount });
     } catch (error) {
@@ -49,11 +55,13 @@ patch the current currency amount by the amount passed in
 */
 router.patch("/:username/addFunds", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
-        const addFunds = req.body.funds;
-        const username = req.params.username;
+        jsonValidate(req.body, storeFundsUpdate); //json validator helper function
+
+        const { funds } = req.body;
+        const { username } = req.params;
 
         const user = await Users.getUser(username);
-        const updatedAmount = await user.addAmount(addFunds);
+        const updatedAmount = await user.addAmount(funds);
 
         return res.json({ updatedAmount });
     } catch (error) {

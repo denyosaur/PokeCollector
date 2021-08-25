@@ -4,6 +4,8 @@ const db = require("../db");
 const { NotFoundError } = require("../expressError");
 const CardsInDecks = require("./cards_in_decks")
 
+/* Functions for Deck Building */
+
 class Deck {
     constructor(id, username, deckName) {
         this.deckId = id;
@@ -16,7 +18,9 @@ class Deck {
     make query to INSERT a new entry with user ID and deck name
     returns object: {id, username, deckName}
     */
-    static async createDeck(username, deckName) {
+    static async createDeck(newDeck) {
+        const { username, deckName } = newDeck;
+
         const deckResult = await db.query(`INSERT INTO users_decks
                                            (username, deck_name)
                                            VALUES ($1, $2)
@@ -97,9 +101,8 @@ class Deck {
     };
 
     /* Get all cards from this deck
-    make query to DELETE entry with matching username and ID 
-    if it doesn't exist, throw NotFoundError
-    returns object: {id, username, deckName}
+    call method getAllCards from CardsInDecks with deck ID passed in
+    returns object: [{id, name, images, setName, setLogo},...]
     */
     async getCards() {
         const cards = await CardsInDecks.getAllCards(this.deckId);
@@ -108,14 +111,17 @@ class Deck {
     };
 
     /*Update cards in Deck
-    make a query request to remove the card from the deck
+    call method removeCards from CardsInDecks with deck ID passed in
     if there is no row with matching deck and card ID, throw NotFoundError
-    return removedCard {deckId, cardId}
+    return object 
+    {updated:{
+        removed: {deckId, cardId}, 
+        added:{deckId, cardId}
+    }}
     */
     async updateCards(removeArr, addArr) {
-        const removed = await CardsInDecks.removeCards(this.deckId, removeArr);
-        const added = await CardsInDecks.addCards(this.deckId, addArr);
-        return { removed, added };
+        const updated = await CardsInDecks.updateDeckCards(this.deckId, removeArr, addArr);
+        return { updated };
     };
 };
 

@@ -1,24 +1,30 @@
 "use strict";
 
-/* Routes for Authentication */
+/* Routes for Cards */
 
-const jsonschema = require("jsonschema");
 const express = require("express");
-const router = new express.Router();
+
+const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 
 const { Cards } = require("../models/cards");
 const { UsersCards } = require("../models/cards");
 
-const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
+const { jsonValidate } = require("../helpers/jsonvalidator-helpers");
+const cardNewSchema = require("../schemas/cardNew.json");
 
-
-
-const { BadRequestError } = require("../expressError");
+const router = new express.Router();
 
 /*********NO RESTRICTION*********/
 
 /* GET /cards/ => [{card},...] 
-available query filters: {name, minPrice, maxPrice, rarity, types, setName}
+available {query: {
+    name, 
+    minPrice, 
+    maxPrice, 
+    rarity, 
+    types, 
+    setName
+}}
 */
 router.get("/", async function (req, res, next) {
     const query = req.query;
@@ -27,14 +33,8 @@ router.get("/", async function (req, res, next) {
     if (query.maxPrice !== undefined) query.maxPrice = +query.maxPrice;
 
     try {
-        //validate the username and password object schema
-        const validate = jsonschema.validate(req.body, cardSearchSchema);
-        if (!validate.valid) {
-            const errors = validate.errors.map(err => err.stack);
-            throw new BadRequestError(errors);
-        };
-
         const cards = await Cards.findAll(query);
+
         return res.json({ cards });
     } catch (error) {
         return next(error);
@@ -46,8 +46,10 @@ route to get a specific card's information from db
 */
 router.get("/:cardId", async function (req, res, next) {
     try {
-        const id = req.params.cardId;
-        const card = await Cards.getCardInfo(id);
+        const { cardId } = req.params;
+
+        const card = await Cards.getCardInfo(cardId);
+
         return res.json({ card });
     } catch (error) {
         return next(error);
@@ -62,7 +64,8 @@ Returns list of cards that user owns - Correct User or Admin Only
 */
 router.get("/:username", ensureLoggedIn, async function (req, res, next) {
     try {
-        const username = req.params.username;
+        const { username } = req.params;
+
         const cards = await UsersCards.getUsersCards(username);
         return res.json({ cards });
     } catch (error) {
@@ -83,7 +86,9 @@ create new card entry to cards table - ADMIN ONLY
 */
 router.post("/createCard", ensureAdmin, async function (req, res, next) {
     try {
-        const card = req.body;
+        jsonValidate(req.body, cardNewSchema);
+
+        const { card } = req.body;
         const newCard = {
             "name": card.name,
             "superType": card.supertype,
@@ -114,15 +119,28 @@ router.post("/createCard", ensureAdmin, async function (req, res, next) {
     };
 });
 
+router.post("/pullCards/:setName", ensureAdmin, async function (req, res, next) {
+    try {
+        const { setName } = req.params;
+
+        const newCards = await Cards.pullAndPushCards(setName);
+
+        return res.json({ newCards });
+    } catch (error) {
+        return next(error);
+    };
+});
+
 /* DELETE /[handle]  =>  { deleted: handle }
 route to delete a card by id - only admins allowed
 returns deleted card ID
 */
 router.post("/delete/:cardId", ensureAdmin, async function (req, res, next) {
     try {
-        const card = req.params.cardId;
+        const { card } = req.params;
 
         const deletedCard = await Cards.delete(card);
+
         return res.json({ deletedCard });
     } catch (error) {
         return next(error);

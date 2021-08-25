@@ -7,6 +7,8 @@ const { sqlForPartialUpdate } = require("../helpers/sql-helpers");
 const UsersCards = require("./users_cards")
 const Messages = require("./messages")
 
+/* Functions for Trades */
+
 class Trades {
     constructor(id, sellerName, buyerName, sellerOffer, buyerOffer, completed = false, messages = null) {
         this.id = id;
@@ -65,10 +67,9 @@ class Trades {
 
         const { id, sellerName, buyerName, sellerOffer, buyerOffer, completed } = result.rows[0];
 
-        const trade = new Trades(id, sellerName, buyerName, sellerOffer, buyerOffer, completed);
-
         const messages = await Messages.getAllMessages(tradeId);
-        trade.messages = messages;
+
+        const trade = new Trades(id, sellerName, buyerName, sellerOffer, buyerOffer, completed, messages);
 
         return trade;
     };

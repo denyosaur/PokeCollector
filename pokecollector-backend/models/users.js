@@ -7,6 +7,8 @@ const { NotFoundError, BadRequestError, UnauthorizedError } = require("../expres
 
 const { BCRYPT_WORK_FACTOR } = require("../config.js");
 
+/* Functions for Users */
+
 class Users {
     constructor(username, firstName, lastName, email, currencyAmount = 1000, isAdmin = false) {
         this.username = username;
@@ -116,7 +118,7 @@ class Users {
     /*
     Update User's Own Info
 
-        return the user object: { username, firstName, lastName, email, isAdmin, currencyAmount, [cardIds] }
+        return the user object: { username, firstName, lastName, email, isAdmin, currencyAmount }
     */
     static async updateUserInfo(username, data) {
         if (data.password) {
@@ -126,11 +128,9 @@ class Users {
         const { updateCols, values } = sqlForPartialUpdate(
             data,
             {
-                username: "username",
                 firstName: "first_name",
                 lastName: "last_name",
-                password: "password",
-                isAdmin: "is_admin"
+                password: "password"
             }
         );
         const usernameIdx = "$" + (values.length + 1);

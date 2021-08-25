@@ -1,14 +1,16 @@
 "use strict";
 
-/* Routes for Authentication */
+/* Routes for Deck Building */
 
-const jsonschema = require("jsonschema");
-const cardSchema = require("../schemas/cardSchema.json");
-
-const { ensureCorrectUserOrAdmin } = require("../middleware/auth");
 const express = require("express");
 
+const { ensureCorrectUserOrAdmin } = require("../middleware/auth");
+
 const Decks = require("../models/decks");
+
+const { jsonValidate } = require("../helpers/jsonvalidator-helpers");
+const decksNewSchema = require("../schemas/decksNew.json");
+const decksNameUpdateSchema = require("../schemas/decksNameUpdate.json");
 
 const router = new express.Router();
 
@@ -18,7 +20,8 @@ get a list of all the decks the user owns
 */
 router.get("/:username", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
-        const username = req.params.username;
+        const { username } = req.params;
+
         const decks = await Decks.getAllDecks(username);
 
         return res.json({ decks });
@@ -32,7 +35,7 @@ get list of all cards in the deck
 */
 router.get("/:username/:deckId", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
-        const deckId = req.params.deckId;
+        const { deckId } = req.params;
 
         const deck = await Decks.getDeck(deckId);
         const cards = await deck.getCards();
@@ -45,13 +48,13 @@ router.get("/:username/:deckId", ensureCorrectUserOrAdmin, async function (req, 
 
 /* POST /decks/:username => {deck: deckName}
 create a new deck
+req.body must contain {username, deckName}
 */
-router.get("/:username", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.post("/:username", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
-        const deckName = req.body.deckName;
-        const username = req.params.username;
+        jsonValidate(req.body, decksNewSchema); //json validator helper function
 
-        const deck = await Decks.createDeck(username, deckName);
+        const deck = await Decks.createDeck(req.body);
 
         return res.json({ deck });
     } catch (error) {
@@ -66,9 +69,11 @@ req.body = {currentDeckName, updatedDeckName}
 */
 router.patch("/:username/:deckId/updateName", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
-        const { deckId, newName } = req.body;
-        const deck = await Decks.getDeck(deckId);
+        jsonValidate(req.body, decksNameUpdateSchema); //json validator helper function
 
+        const { deckId, newName } = req.body;
+
+        const deck = await Decks.getDeck(deckId);
         const newDeckName = await deck.updateDeckName(newName);
 
         return res.json({ newDeckName });
@@ -79,15 +84,19 @@ router.patch("/:username/:deckId/updateName", ensureCorrectUserOrAdmin, async fu
 
 /* POST /decks/:username => {updated: {added}, {removed}}
 insert or delete cards from deck 
-req.body = {[remove], [add]} - array of card IDs
+req.body = {
+    remove:[id1,...], 
+    add:[id1,...]
+}
 */
 router.patch("/:username/:deckId", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
         const { remove, add } = req.body;
-        const deckId = req.params;
-        const deck = await Decks.getDeck(deckId);
+        const { deckId } = req.params;
 
+        const deck = await Decks.getDeck(deckId);
         const updated = await deck.updateCards(remove, add);
+
         return res.json({ updated });
     } catch (error) {
         return next(error);
@@ -100,8 +109,8 @@ delete entire deck
 router.delete("/:username/:deckId", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
         const { deckId } = req.params;
-        const deck = await Decks.getDeck(deckId);
 
+        const deck = await Decks.getDeck(deckId);
         const deleted = deck.delete();
 
         return res.json({ deleted });

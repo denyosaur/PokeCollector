@@ -1,54 +1,52 @@
 CREATE TABLE users (
-    id PRIMARY KEY TEXT,
-    username TEXT UNIQUE NOT NULL CHECK (username = lower(handle)),
+    username VARCHAR(30) PRIMARY KEY,
     password TEXT NOT NULL,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
     email TEXT UNIQUE CHECK (position('@' IN email) > 1),
-    currency_amount INTEGER NOT NULL
+    currency_amount INTEGER NOT NULL,
     is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE trades (
-    id PRIMARY KEY TEXT,
+    id SERIAL PRIMARY KEY,
     seller_name TEXT NOT NULL
-        REFERENCES users(id) ON DELETE CASCADE,
+        REFERENCES users(username) ON DELETE CASCADE,
     buyer_name TEXT NOT NULL
-        REFERENCES users(id) ON DELETE CASCADE,
+        REFERENCES users(username) ON DELETE CASCADE,
     seller_offer TEXT[] NOT NULL,
     buyer_offer TEXT[] NOT NULL,
     completed BOOLEAN NOT NULL
 );
 
 CREATE TABLE messages (
-    id PRIMARY KEY TEXT,
-    trade_id
-        REFERENCES trades(id) ON DELETE CASCADE,
-    username TEXT NOT NULL
-        REFERENCES users(username) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    trade_id INTEGER NOT NULL REFERENCES trades(id) ON DELETE CASCADE,
+    username TEXT NOT NULL REFERENCES users(username) ON DELETE CASCADE,
     message TEXT,
-    timestamp NOT NULL
-)
+    timestamp TEXT NOT NULL
+);
 
 CREATE TABLE cards (
-    id PRIMARY KEY TEXT,
-    name TEXT UNIQUE NOT NULL CHECK (username = lower(handle)),
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
     supertype TEXT NOT NULL,
     subtypes TEXT[],
     hp TEXT,
     types TEXT[],
     evolves_to TEXT[],
     rules TEXT[],
-    attacks TEXT,
-    weaknesses TEXT,
-    retreat_cost TEXT,
-    converted_retreat_cost TEXT,
+    attacks TEXT[],
+    weaknesses TEXT[],
+    resistances TEXT[],
+    retreat_cost TEXT[],
+    converted_retreat_cost INTEGER,
     set_name TEXT,
     set_logo TEXT,
     number TEXT,
     artist TEXT,
     rarity TEXT,
-    national_pokedex_numbers TEXT[],
+    national_pokedex_numbers INTEGER[],
     legalities TEXT,
     images TEXT,
     tcgplayer TEXT,
@@ -56,24 +54,19 @@ CREATE TABLE cards (
 );
 
 CREATE TABLE users_cards (
-    id PRIMARY KEY TEXT,
-    username TEXT 
-        REFERENCES users(username) ON DELETE CASCADE,
-    card_id TEXT NOT NULL
-        REFERENCES cards(id) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    username TEXT REFERENCES users(username) ON DELETE CASCADE,
+    card_id TEXT NOT NULL REFERENCES cards(id) ON DELETE CASCADE
 );
 
 CREATE TABLE users_decks (
-    id PRIMARY KEY TEXT,
-    username TEXT NOT NULL
-        REFERENCES users(username) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    username TEXT NOT NULL REFERENCES users(username) ON DELETE CASCADE,
     deck_name TEXT NOT NULL
 );
 
 CREATE TABLE cards_in_users_decks (
-    id PRIMARY KEY TEXT,
-    deck_id TEXT NOT NULL
-        REFERENCES users_decks(id) ON DELETE CASCADE,
-    users_cards_id TEXT NOT NULL
-        REFERENCES users_cards(id) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    deck_id INTEGER NOT NULL REFERENCES users_decks(id) ON DELETE CASCADE,
+    users_cards_id INTEGER NOT NULL REFERENCES users_cards(id) ON DELETE CASCADE
 );

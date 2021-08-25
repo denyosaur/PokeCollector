@@ -2,6 +2,7 @@
 
 const db = require("../db");
 
+/* Functions for Messages */
 
 class Messages {
     constructor(id, tradeId, userId, message, timestamp) {
