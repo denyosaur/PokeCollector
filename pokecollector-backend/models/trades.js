@@ -108,46 +108,15 @@ class Trades {
     async acceptOffer(username) {
         if (username !== this.buyerName) throw new BadRequestError(`This user made the offer: ${username}`);
 
-        UsersCards.makeTrade(this.sellerName, this.buyerName, this.sellerOffer, this.buyerOffer);
+        const tradedCards = await UsersCards.makeTrade(this.sellerName, this.buyerName, this.sellerOffer, this.buyerOffer);
 
-        const finalize = await db.query(`UPDATE trades
+        const markComplete = await db.query(`UPDATE trades
                                          SET completed = $1
                                          WHERE id = $2
                                          RETURNING completed`, [true, this.id]);
-        return finalize.rows[0];
-    };
+        const status = markComplete.rows[0]
 
-    /* Update Trade Offer
-    data is an object that contains columns that can be updated.
-    send the new data ({sellerOffer, buyerOffer}) and changableData to sqlForPartialUpdate for sql queries
-    indexIdx holds the last index of the values array. this wil be used for the last spot in array
-    make a db query to update the seller and buyer offers
-    with the returning information, create a new Trades object
-    */
-    async updateOffer(data) {
-        const changableData = {
-            sellerOffer: "seller_offer",
-            buyerOffer: "buyer_offer"
-        };
-        const { setCols, values } = sqlForPartialUpdate(data, changableData);
-
-        const indexId = "$" + (values.length + 1);
-
-        const querySql = `UPDATE trades 
-                          SET ${setCols} 
-                          WHERE id = ${indexId} 
-                          RETURNING id,
-                                    seller_name AS "sellerName", 
-                                    buyer_name AS "buyerName", 
-                                    seller_offer AS "sellerOffer", 
-                                    buyer_offer AS "buyerOffer",
-                                    completed`;
-        const result = await db.query(querySql, [...values, this.id]);
-
-        const { id, sellerName, buyerName, sellerOffer, buyerOffer, completed } = result.rows[0];
-        const updatedTrade = new Trades(id, sellerName, buyerName, sellerOffer, buyerOffer, completed);
-
-        return updatedTrade;
+        return { tradedCards, status };
     };
 
     /* Delete/Refuse Offer
@@ -161,9 +130,7 @@ class Trades {
                                        WHERE id = $1
                                        RETURNING id`, [this.id]);
 
-        const trade = result.rows[0];
-
-        return trade;
+        return "deleted";
     };
 
 };

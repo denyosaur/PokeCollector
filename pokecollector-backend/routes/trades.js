@@ -11,7 +11,6 @@ const Messages = require("../models/messages");
 
 const { jsonValidate } = require("../helpers/jsonvalidator-helpers");
 const tradesNewSchema = require("../schemas/tradesNew.json");
-const tradesUpdateSchema = require("../schemas/tradesUpdate.json");
 const messageNewSchema = require("../schemas/messageNew.json");
 const messageUpdateSchema = require("../schemas/messageUpdate.json");
 
@@ -104,10 +103,10 @@ router.patch("/:username/:msgId", ensureCorrectUserOrAdmin, async function (req,
 });
 
 
-/* POST trades/:username/:tradeId => {true}
+/* PATCH trades/:username/:tradeId => {true}
 route that accepts trade offer
 */
-router.post("/:username/:tradeId/accept", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.patch("/:username/:tradeId/accept", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
         const { username, tradeId } = req.params;
 
@@ -121,26 +120,6 @@ router.post("/:username/:tradeId/accept", ensureCorrectUserOrAdmin, async functi
     };
 });
 
-/* PATCH trades/:username/:tradeId => {tradeRes: {id, sellerName, buyerName, sellerOffer, buyerOffer, completed}}
-route that updates trade offers
-
-example - trade.updateOffer({sellerOffer, buyerOffer});
-*/
-router.post("/:username/:tradeId", ensureCorrectUserOrAdmin, async function (req, res, next) {
-    try {
-        jsonValidate(req.body, tradesUpdateSchema); //json validator helper function
-
-        const { tradeId } = req.params;
-
-        const trade = await Trades.getTrade(tradeId);
-        const offerStatus = await trade.updateOffer(updateOffer);
-
-        return res.json({ offerStatus });
-    } catch (error) {
-        return next(error);
-    };
-});
-
 /* DELETE trades/:username/:tradeId/delete => { deleted: tradeId }
 route that deletes trade offer
 */
@@ -149,9 +128,9 @@ router.delete("/:username/:tradeId/delete", ensureCorrectUserOrAdmin, async func
         const { tradeId } = req.params;
 
         const trade = await Trades.getTrade(tradeId);
-        const deletedTradeId = await trade.deleteOffer(tradeId);
+        const status = await trade.deleteOffer();
 
-        return res.status(201).json({ deleted: deletedTradeId });
+        return res.status(201).json({ deleted: trade, status });
     } catch (error) {
         return next(error);
     };
@@ -161,14 +140,14 @@ router.delete("/:username/:tradeId/delete", ensureCorrectUserOrAdmin, async func
 /* DELETE trades/:username/:msgId => { deleted: msgId }
 route that deletes message
 */
-router.delete("/:username/:msgId", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.delete("/:username/:msgId/deleteMessage", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
         const { msgId } = req.params;
 
         const msg = await Messages.getMessage(msgId);
         const updated = await msg.deleteMessage();
 
-        return res.status(201).json({ deleted: updated });
+        return res.status(201).json({ deleted: msg });
     } catch (error) {
         return next(error);
     }

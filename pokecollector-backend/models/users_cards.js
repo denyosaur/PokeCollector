@@ -4,7 +4,7 @@ const db = require("../db");
 
 const Cards = require("./cards");
 
-const { NotFoundError } = require("../expressErrors");
+const { BadRequestError } = require("../expressErrors");
 
 /* Functions for cards that users own */
 
@@ -102,13 +102,16 @@ class UsersCards {
     use addCardToUser and removeCardFromUser to add and remove cards accordingly
     */
     static async makeTrade(sellerName, buyerName, sellerOffer, buyerOffer) {
+        await this._checkOwnership(sellerName, sellerOffer);
+        await this._checkOwnership(buyerName, buyerOffer);
+
         const buyersNew = await this._transfer(sellerName, buyerName, sellerOffer);
         const sellersNew = await this._transfer(buyerName, sellerName, buyerOffer);
 
         return { buyersNew, sellersNew };
     };
-    /* support function used to transfer ownership of cards in users_card
-    */
+
+    /* support function used to transfer ownership of cards in users_card*/
     static async _transfer(oldOwner, newOwner, toTrade) {
         const transferRes = await Promise.all(toTrade.map(async (cardId) => {
             const updateOwner = await db.query(`UPDATE users_cards
@@ -122,11 +125,13 @@ class UsersCards {
         return transferRes;
     };
 
+    /* support function to check if use owns the cards*/
     static async _checkOwnership(username, toTrade) {
-        const string = `username = $1 AND card_id IN ()`
+        const searchStr = toTrade.join(", ")
         const check = await db.query(`SELECT id, username, card_id AS "cardId"
                                       FROM users_cards
-                                      WHERE username = $1 AND card_id IN ()`);
+                                      WHERE username = $1 AND card_id IN ($2)`, [username, searchStr]);
+        if (check.rows.length !== toTrade.length) throw new BadRequestError(`User ${username}, does not own the selected cards.`)
     };
 };
 

@@ -104,11 +104,12 @@ class Users {
                                         FROM users 
                                         WHERE username = $1`, [uname]);
 
+        if (!userRes.rows[0]) throw new NotFoundError(`No user with username: ${uname}`);
         //create variable to hold only user information
         const { username, firstName, lastName, email, currencyAmount, isAdmin } = userRes.rows[0];
 
         //throw NotFoundError if the username doesn't exist
-        if (!userRes) throw new NotFoundError(`No user with username: ${username}`);
+
 
         return new Users(username, firstName, lastName, email, currencyAmount, isAdmin);
     };
@@ -116,14 +117,14 @@ class Users {
     /*
     Update User's Own Info
 
-        return the user object: { username, firstName, lastName, email, isAdmin, currencyAmount }
+        return the user object: {user:{ username, firstName, lastName, email, isAdmin, currencyAmount }}
     */
     static async updateUserInfo(uname, data) {
         if (data.password) {
             data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
         }
 
-        const { updateCols, values } = sqlForPartialUpdate(
+        const { setCols, values } = sqlForPartialUpdate(
             data,
             {
                 firstName: "first_name",
@@ -131,23 +132,24 @@ class Users {
                 password: "password"
             }
         );
-        const usernameIdx = "$" + (values.length + 1);
+
+        const usernameIdx = values.length + 1;
         const querySql = `UPDATE users
-                          SET ${updateCols}
-                          WHERE username = ${usernameIdx}
+                          SET ${setCols}
+                          WHERE username = $${usernameIdx}
                           RETURNING username,
                                     first_name AS "firstName",
                                     last_name AS "lastName",
                                     email,
-                                    currency_amount AS "currencyAmount"
+                                    currency_amount AS "currencyAmount",
                                     is_admin AS "isAdmin"`;
 
         const result = await db.query(querySql, [...values, uname]);
         const { username, firstName, lastName, email, currencyAmount, isAdmin } = result.rows[0];
 
-        if (!user) throw new NotFoundError(`No user with username: ${username}`);
+        if (!result) throw new NotFoundError(`No user with username: ${username}`);
 
-        return new Users(username1, firstName, lastName, email, currencyAmount, isAdmin);
+        return new Users(username, firstName, lastName, email, currencyAmount, isAdmin);
     };
 
     /* Remove Amount from User's amount

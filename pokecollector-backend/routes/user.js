@@ -6,7 +6,7 @@ const express = require("express");
 
 const { ensureAdmin, ensureCorrectUserOrAdmin } = require("../middleware/auth");
 
-const User = require("../models/users");
+const Users = require("../models/users");
 
 const { createToken } = require("../helpers/token-helpers");
 
@@ -25,7 +25,7 @@ router.get("/:username", ensureCorrectUserOrAdmin, async function (req, res, nex
     try {
         const { username } = req.params;
 
-        const user = await User.getUser(username);
+        const user = await Users.getUser(username);
 
         return res.json({ user });
     } catch (error) {
@@ -45,7 +45,7 @@ router.patch("/:username", ensureCorrectUserOrAdmin, async function (req, res, n
 
         const { username } = req.params;
 
-        const user = await User.updateUserInfo(username, req.body);
+        const user = await Users.updateUserInfo(username, req.body);
         return res.json({ user });
 
     } catch (error) {
@@ -64,11 +64,11 @@ router.delete("/:username", ensureCorrectUserOrAdmin, async function (req, res, 
     try {
         const { username } = req.params;
 
-        const user = await User.getUser(username);
+        const user = await Users.getUser(username);
 
         await user.delete();
 
-        return res.json({ deleted: user });
+        return res.status(201).json({ deleted: user });
     } catch (error) {
         return next(error);
     };
@@ -84,9 +84,9 @@ Returns list of all users - admin only
 user findAll method from User to fetch list of all users
 return user object
 */
-router.get("/", ensureAdmin, async function (req, res, next) {
+router.get("/admin/allusers", ensureAdmin, async function (req, res, next) {
     try {
-        const user = await User.findAll();
+        const user = await Users.findAll();
 
         return res.json({ user });
     } catch (error) {
@@ -101,15 +101,16 @@ check inputs against jsonschema to validate that inputs are correct. if not thro
 pass in req.body to User.register to create new account.
 return user and token
 */
-router.post("/", ensureAdmin, async function (req, res, next) {
+router.post("/admin/createadmin", ensureAdmin, async function (req, res, next) {
     try {
         jsonValidate(req.body, userNewAdminSchema); //json validator helper function
 
-        const token = createToken(user);
+        const { username, password, firstName, lastName, email, isAdmin } = req.body;
 
-        const user = await User.register(req.body);
+        const newAdmin = await Users.register(username, password, firstName, lastName, email, isAdmin);
+        const token = createToken(newAdmin);
 
-        return res.status(201).json({ user, token });
+        return res.status(201).json({ newAdmin, token });
     } catch (error) {
         return next(error);
     };
