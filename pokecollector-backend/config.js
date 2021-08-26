@@ -10,6 +10,7 @@ const SECRET_KEY = process.env.SECRET_KEY || "ash-secret-key";
 const PORT = +process.env.PORT || 3001;
 
 // Use dev database, testing database, or via env var, production database
+/** Shared config for application; can be required many places. */
 function getDatabaseUri() {
     return (process.env.NODE_ENV === "test")
         ? "pokecollector_test"

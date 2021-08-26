@@ -44,10 +44,9 @@
             "maxLength": 280
         }
     },
-    "additionalProperties": false,
     "required": [
-        "sellerName",
-        "buyerName",
+        "seller",
+        "buyer",
         "offers"
     ]
 }

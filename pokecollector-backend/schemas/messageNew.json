@@ -5,16 +5,6 @@
     "title": "New Message",
     "description": "A new message related to a specific trade",
     "properties": {
-        "tradeId": {
-            "description": "Trade ID",
-            "type": "integer"
-        },
-        "username": {
-            "description": "Username of messenger",
-            "type": "string",
-            "minLength": 3,
-            "maxLength": 30
-        },
         "message": {
             "description": "Message from user",
             "type": "string",
@@ -24,8 +14,6 @@
     },
     "additionalProperties": false,
     "required": [
-        "tradeId",
-        "username",
         "message"
     ]
 }

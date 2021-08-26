@@ -65,9 +65,9 @@ router.post("/:username", ensureCorrectUserOrAdmin, async function (req, res, ne
 
 /* PATCH /decks/:username => {deck: deckName}
 updates name of deck that user owns
-req.body = {currentDeckName, updatedDeckName}
+req.body = {deckId, newName}
 */
-router.patch("/:username/:deckId/updateName", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.patch("/:username/:deckId", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
         jsonValidate(req.body, decksNameUpdateSchema); //json validator helper function
 
@@ -89,7 +89,7 @@ req.body = {
     add:[id1,...]
 }
 */
-router.patch("/:username/:deckId", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.post("/:username/:deckId", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
         const { remove, add } = req.body;
         const { deckId } = req.params;
@@ -111,10 +111,12 @@ router.delete("/:username/:deckId", ensureCorrectUserOrAdmin, async function (re
         const { deckId } = req.params;
 
         const deck = await Decks.getDeck(deckId);
-        const deleted = deck.delete();
+        const deleted = await deck.delete();
 
         return res.json({ deleted });
     } catch (error) {
         return next(error);
     };
 });
+
+module.exports = router;

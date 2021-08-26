@@ -1,7 +1,7 @@
 "use strict";
 
 const db = require("../db");
-const { BadRequestError, NotFoundError } = require("../expressError");
+const { BadRequestError, NotFoundError } = require("../expressErrors");
 const { sqlForPartialUpdate } = require("../helpers/sql-helpers");
 
 const UsersCards = require("./users_cards")
@@ -26,24 +26,24 @@ class Trades {
     create a new message using Messages.createMessage
     return new trade object {seller, buyer, sellerOffer, buyerOffer, {message}}
     */
-    static async createTrade(sellerName, buyerName, offers, message) {
+    static async createTrade({ seller, buyer, offers, message }) {
         const { sellerOffer, buyerOffer } = offers;
 
         const tradeRes = await db.query(`INSERT INTO trades
                                          (seller_name, buyer_name, seller_offer, buyer_offer, completed)
                                          VALUES ($1, $2, $3, $4, $5)
                                          RETURNING id,
-                                                   seller_name AS "sellerName", 
-                                                   buyer_name AS "buyerName", 
-                                                   seller_offer AS "sellerOffer",
-                                                   buyer_offer AS "buyerOffer",
+                                                   seller_name AS "newSellerName", 
+                                                   buyer_name AS "newBuyerName", 
+                                                   seller_offer AS "newSellerOffer",
+                                                   buyer_offer AS "newBuyerOffer",
                                                    completed`,
-            [sellerName, buyerName, sellerOffer, buyerOffer, false]);
-        const { id, sellerName, buyerName, sellerOffer, buyerOffer, completed } = tradeRes.rows[0];
-        const newTrade = new Trades(id, sellerName, buyerName, sellerOffer, buyerOffer, completed);
+            [seller, buyer, sellerOffer, buyerOffer, false]);
+        const { id, newSellerName, newBuyerName, newSellerOffer, newBuyerOffer, completed } = tradeRes.rows[0];
 
-        const message = await Messages.createMessage(id, sellerName, message);
-        newTrade.messages = message;
+        const msg = await Messages.createMessage(id, newSellerName, message);
+
+        const newTrade = new Trades(id, newSellerName, newBuyerName, newSellerOffer, newBuyerOffer, completed, msg);
 
         return newTrade;
     };
@@ -88,9 +88,10 @@ class Trades {
                                        FROM trades 
                                        WHERE seller_name = $1 OR buyer_name = $1`, [username]);
 
-        const trades = result.map(trade => {
+        const trades = result.rows.map(trade => {
             const { id, sellerName, buyerName, sellerOffer, buyerOffer, completed } = trade;
-            return new Trades(id, sellerName, buyerName, sellerOffer, buyerOffer, completed);
+            const newTrade = new Trades(id, sellerName, buyerName, sellerOffer, buyerOffer, completed);
+            return newTrade;
         });
 
         return trades;
@@ -112,7 +113,7 @@ class Trades {
         const finalize = await db.query(`UPDATE trades
                                          SET completed = $1
                                          WHERE id = $2
-                                         RETURNING completed,`[true, id]);
+                                         RETURNING completed`, [true, this.id]);
         return finalize.rows[0];
     };
 
@@ -167,4 +168,4 @@ class Trades {
 
 };
 
-module.exports = { Trades };
+module.exports = Trades;

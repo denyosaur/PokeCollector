@@ -6,9 +6,9 @@ const express = require("express");
 
 const { ensureAdmin, ensureCorrectUserOrAdmin } = require("../middleware/auth");
 
-const User = require("../models/user");
+const User = require("../models/users");
 
-const { createToken } = require("../helpers/tokens");
+const { createToken } = require("../helpers/token-helpers");
 
 const { jsonValidate } = require("../helpers/jsonvalidator-helpers");
 const userNewAdminSchema = require("../schemas/userNewAdmin.json");
@@ -114,3 +114,5 @@ router.post("/", ensureAdmin, async function (req, res, next) {
         return next(error);
     };
 });
+
+module.exports = router;

@@ -23,7 +23,7 @@ router.post("/:username/purchase", ensureCorrectUserOrAdmin, async function (req
         const { cart } = req.body;
         const { username } = req.params;
 
-        const newCards = UsersCards.createCardsToUser(username, cart);
+        const newCards = await UsersCards.createCardsToUser(username, cart);
 
         return res.status(201).json({ newCards });
     } catch (error) {
@@ -68,3 +68,5 @@ router.patch("/:username/addFunds", ensureCorrectUserOrAdmin, async function (re
         return next(error);
     };
 });
+
+module.exports = router;

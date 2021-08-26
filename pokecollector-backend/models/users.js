@@ -3,7 +3,7 @@
 const db = require("../db");
 const bcrypt = require("bcrypt");
 const { sqlForPartialUpdate } = require("../helpers/sql-helpers");
-const { NotFoundError, BadRequestError, UnauthorizedError } = require("../expressError");
+const { NotFoundError, BadRequestError, UnauthorizedError } = require("../expressErrors");
 
 const { BCRYPT_WORK_FACTOR } = require("../config.js");
 
@@ -24,10 +24,9 @@ class Users {
     if bcrypt.compare passes, return user object: { id, username, firstName, lastName, email, currencyAmount, isAdmin, currencyAmount }
     else, throw UnauthorizedError
     */
-    static async authenticate(username, password) {
+    static async authenticate(uname, password) {
         const result = await db.query(
-            `SELECT id,
-                    username,
+            `SELECT username,
                     password AS "hashedPassword",
                     first_name AS "firstName",
                     last_name AS "lastName",
@@ -36,13 +35,13 @@ class Users {
                     is_admin AS "isAdmin"
              FROM users
              WHERE username = $1`,
-            [username]);
+            [uname]);
         const { username, hashedPassword, firstName, lastName, email, currencyAmount, isAdmin } = result.rows[0];
 
         if (result.rows[0]) {
             const isValid = await bcrypt.compare(password, hashedPassword);
             if (isValid) {
-                return new User(username, firstName, lastName, email, currencyAmount, isAdmin);
+                return new Users(username, firstName, lastName, email, currencyAmount, isAdmin);
             }
         };
 
@@ -56,10 +55,10 @@ class Users {
         make a db.query to create user which returns information about the new user
         return new user object: { username, firstName, lastName, email, isAdmin, currencyAmount }
     */
-    static async register(username, password, firstName, lastName, email, currencyAmount = 1000, isAdmin = false) {
+    static async register(uname, password, fName, lName, newEmail, admin = false, currency = 1000) {
         const duplicateCheck = await db.query(`SELECT username, email 
                                                FROM users 
-                                               WHERE username = $1 OR email = $2`, [this.username, this.email]);
+                                               WHERE username = $1 OR email = $2`, [uname, newEmail]);
         if (duplicateCheck.rows[0]) throw new BadRequestError(`Duplicate username or email`);
 
         const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
@@ -67,12 +66,12 @@ class Users {
         const result = await db.query(`INSERT INTO users
                                        (username, password, first_name, last_name, email, currency_amount, is_admin)
                                        VALUES ($1,$2,$3,$4,$5,$6,$7)
-                                       RETURNING username, first_name AS "firstName", last_name AS "lastName", email, is_Admin AS "isAdmin", currency_amount AS "currencyAmount`,
-            [username, hashedPassword, firstName, lastName, email, currencyAmount, currencyAmount, isAdmin]);
+                                       RETURNING username, first_name AS "firstName", last_name AS "lastName", email, is_Admin AS "isAdmin", currency_amount AS "currencyAmount"`,
+            [uname, hashedPassword, fName, lName, newEmail, currency, admin]);
 
         const { username, firstName, lastName, email, currencyAmount, isAdmin } = result.rows[0];
 
-        return new User(username, firstName, lastName, email, currencyAmount, isAdmin);
+        return new Users(username, firstName, lastName, email, currencyAmount, isAdmin);
     };
 
     /*
@@ -95,24 +94,23 @@ class Users {
         throw a NotFoundError if there are no matching usernames.
         return the user object: { username, firstName, lastName, email, isAdmin, currencyAmount, [cardIds] }
     */
-    static async getUser(username) {
-        const userRes = await db.query(`SELECT id,
-                                               username,
+    static async getUser(uname) {
+        const userRes = await db.query(`SELECT username,
                                                first_name AS "firstName",
                                                last_name AS "lastName",
                                                email,
                                                currency_amount AS "currencyAmount",
                                                is_admin AS "isAdmin"
                                         FROM users 
-                                        WHERE username = $1`, [username]);
+                                        WHERE username = $1`, [uname]);
 
         //create variable to hold only user information
-        const { username, firstName, lastName, email, isAdmin } = userRes.rows[0];
+        const { username, firstName, lastName, email, currencyAmount, isAdmin } = userRes.rows[0];
 
         //throw NotFoundError if the username doesn't exist
-        if (!user) throw new NotFoundError(`No user with username: ${username}`);
+        if (!userRes) throw new NotFoundError(`No user with username: ${username}`);
 
-        return new User(username, firstName, lastName, email, currencyAmount, isAdmin);
+        return new Users(username, firstName, lastName, email, currencyAmount, isAdmin);
     };
 
     /*
@@ -120,7 +118,7 @@ class Users {
 
         return the user object: { username, firstName, lastName, email, isAdmin, currencyAmount }
     */
-    static async updateUserInfo(username, data) {
+    static async updateUserInfo(uname, data) {
         if (data.password) {
             data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
         }
@@ -144,12 +142,12 @@ class Users {
                                     currency_amount AS "currencyAmount"
                                     is_admin AS "isAdmin"`;
 
-        const result = await db.query(querySql, [...values, username]);
+        const result = await db.query(querySql, [...values, uname]);
         const { username, firstName, lastName, email, currencyAmount, isAdmin } = result.rows[0];
 
         if (!user) throw new NotFoundError(`No user with username: ${username}`);
 
-        return new User(username, firstName, lastName, email, currencyAmount, isAdmin);
+        return new Users(username1, firstName, lastName, email, currencyAmount, isAdmin);
     };
 
     /* Remove Amount from User's amount
@@ -210,4 +208,4 @@ class Users {
         return user;
     };
 }
-module.exports = { Users }
+module.exports = Users;

@@ -1,44 +1,67 @@
 "use strict";
 
 const db = require("../db");
-const { NotFoundError } = require("../expressError");
+
+const Cards = require("./cards");
+
+const { NotFoundError } = require("../expressErrors");
 
 /* Functions for cards that users own */
 
 class UsersCards {
-    constructor(id, cardId, username, cardName = null, setName = null, setLogo = null, images = null, prices = null) {
-        this.id = id;
-        this.cardId = cardId;
+    constructor(id, username, cardId, cardInfo = null) {
+        this.ownedId = id;
         this.username = username;
-        this.cardName = cardName;
-        this.setName = setName;
-        this.setLogo = setLogo;
-        this.images = images;
-        this.prices = prices;
-    }
+        this.cardId = cardId;
+        this.cardInfo = cardInfo;
+    };
+
     /* Get all User's Cards
     First, make a db query to check if user with username exists. if not, throw NotFoundError
     make query to get all card IDs that the user owns
-    return cardInfos [cardId, ...]
+    return cardInfos [{ownedId, username, cardId, cardInfo},...]
     */
     static async getUsersCards(username) {
-        const cardsResult = await db.query(`SELECT u.id, 
-                                                u.card_id AS "cardId", 
-                                                u.username,
-                                                cards.name AS "cardName", 
-                                                cards.set_name AS "setName", 
-                                                cards.set_logo AS "setLogo", 
-                                                cards.images, 
-                                                cards.prices
+        const cardsResult = await db.query(`SELECT u.id AS "ownedId", 
+                                                   u.card_id AS "cardId", 
+                                                   u.username,
+                                                   cards.id,
+                                                   cards.name, 
+                                                   cards.supertype, 
+                                                   cards.subtypes, 
+                                                   cards.hp, 
+                                                   cards.types, 
+                                                   cards.evolves_to AS "evolvesTo", 
+                                                   cards.rules, 
+                                                   cards.attacks, 
+                                                   cards.weaknesses, 
+                                                   cards.resistances, 
+                                                   cards.retreat_cost AS "retreatCost", 
+                                                   cards.converted_retreat_cost AS "convertedRetreatCost", 
+                                                   cards.set_name AS "setName", 
+                                                   cards.set_logo AS "setLogo", 
+                                                   cards.artist, 
+                                                   cards.rarity, 
+                                                   cards.national_pokedex_numbers AS "nationalPokedexNumbers", 
+                                                   cards.legalities, 
+                                                   cards.images, 
+                                                   cards.tcgplayer, 
+                                                   cards.prices
                                             FROM users_cards u
                                             INNER JOIN cards ON u.card_id = cards.id
                                             WHERE u.username = $1`, [username]);
-        const cards = cardsResult.rows.map(card => {
-            const { id, cardId, username, cardName, setName, setLogo, images, prices } = card;
-            return new UsersCards(id, cardId, username, cardName, setName, setLogo, images, prices);
+
+        const ownedCards = cardsResult.rows.map(cardData => {
+            const { ownedId, cardId, username, id, name, superType, subtype, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices } = cardData;
+
+            const cardInfo = new Cards(id, name, superType, subtype, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices);
+
+            const usersCardsInfo = new UsersCards(ownedId, username, cardId, cardInfo);
+
+            return usersCardsInfo;
         })
 
-        return cards;
+        return ownedCards;
     };
 
     /* Add new card to user
@@ -48,68 +71,30 @@ class UsersCards {
         if not, INSERT a new entry with card
     return card object {id, username, cardId}
     */
-    static async createNewCard(username, cardId) {
+    static async createNewCard(newUsername, newCardId) {
         const result = await db.query(`INSERT INTO users_cards
                                        (username, card_id)
                                        VALUES ($1, $2)
-                                       RETURNING id, username, card_id AS "cardId"`, [username, cardId]);
+                                       RETURNING id, username, card_id AS "cardId"`, [newUsername, newCardId]);
+
+        const cardInfo = await Cards.getCardInfo(newCardId);
 
         const { id, username, cardId } = result.rows[0];
 
-        return new UsersCards(id, username, cardId);
+        return new UsersCards(id, username, cardId, cardInfo);
     };
 
     /* Add Multiple Cards to a User - used for buying cards
     for each entry in cardArr, use createNewCard
-    return an array of objects [{id, username, cardId},...]
+    return an array of objects [{UsersCards},...]
     */
     static async createCardsToUser(username, cardArr) {
-        const cards = cardArr.map(cardId => {
-            return this.createNewCard(username, cardId);
-        });
+        const cards = await Promise.all(cardArr.map(async (cardId) => {
+            const newCard = await this.createNewCard(username, cardId);
+            return newCard;
+        }));
 
         return cards;
-    };
-
-    /* Remove Card From User
-    First, make a db query to check if the user owns the card. if not, throw NotFoundError
-    update the row's user_id to be null.
-    */
-    static async _removeUserFromCard(username, cardId) {
-        const cardResult = await db.query(`SELECT id, username, card_id AS "cardId"
-                                           FROM users_cards
-                                           WHERE username = $1 AND card_id = $2`, [username, cardId]);
-        const cardOwned = cardResult.rows
-        if (!cardOwned) throw new NotFoundError(`Users does not own card with ID: ${cardId}`);
-
-        const removeResult = await db.query(`UPDATE users_cards
-                                             SET username = $1
-                                             WHERE id = $2
-                                             RETURNING id`, [null, cardOwned[0]]);
-        const cardRemoved = removeResult.rows[0];
-        return cardRemoved;
-    };
-
-    /* Add user to card
-    First, make a db query to check if the card with cardId exists in users_cards. if not, throw NotFoundError
-    Second, update request to change username in users_cards to username 
-    return the entry for card in users_cards
-    */
-    static async _addUserFromCard(username, cardOwnedId) {
-        //check if card exists in card table
-        const cardExists = await db.query(`SELECT id, card_id AS "cardId", card_name AS "cardName"
-                                           FROM cards
-                                           WHERE id = $1`, [cardOwnedId]);
-        if (!cardExists) throw new NotFoundError(`No card owned with ID: ${cardId}`);
-
-        const updateCard = await db.query(`UPDATE users_cards
-                                           SET username = $1
-                                           WHERE id = $2
-                                           RETURNING id, username, card_id AS "cardId"`, [username, cardOwnedId]);
-
-        const card = updateCard.rows[0];
-
-        return card;
     };
 
     /* Make Trade - used with Trades.acceptOffer()
@@ -117,18 +102,32 @@ class UsersCards {
     use addCardToUser and removeCardFromUser to add and remove cards accordingly
     */
     static async makeTrade(sellerName, buyerName, sellerOffer, buyerOffer) {
-        const buyersNewCards = sellerOffer.map(cardId => {
-            const sellerCard = this._removeUserFromCard(sellerName, cardId);
-            this.addCardToUser(buyerName, sellerCard)
-        });
+        const buyersNew = await this._transfer(sellerName, buyerName, sellerOffer);
+        const sellersNew = await this._transfer(buyerName, sellerName, buyerOffer);
 
-        const sellersNewCards = buyerOffer.map(cardId => {
-            const buyerCard = this._removeUserFromCard(buyerName, cardId);
-            this.addCardToUser(sellerName, buyerCard)
-        });
+        return { buyersNew, sellersNew };
+    };
+    /* support function used to transfer ownership of cards in users_card
+    */
+    static async _transfer(oldOwner, newOwner, toTrade) {
+        const transferRes = await Promise.all(toTrade.map(async (cardId) => {
+            const updateOwner = await db.query(`UPDATE users_cards
+                                                SET username=$1
+                                                WHERE username=$2 AND card_id=$3
+                                                RETURNING id, username, card_id AS "cardId"`, [newOwner, oldOwner, cardId]);
 
-        return { buyersNewCards, sellersNewCards };
+            return updateOwner.rows[0];
+        }));
+
+        return transferRes;
+    };
+
+    static async _checkOwnership(username, toTrade) {
+        const string = `username = $1 AND card_id IN ()`
+        const check = await db.query(`SELECT id, username, card_id AS "cardId"
+                                      FROM users_cards
+                                      WHERE username = $1 AND card_id IN ()`);
     };
 };
 
-module.exports = { UsersCards };
+module.exports = UsersCards;

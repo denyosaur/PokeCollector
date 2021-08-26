@@ -18,15 +18,15 @@ class CardsInDecks {
     return addCard [{id, name, images, setName, setLogo},...]
     */
     static async getAllCards(deckId) {
-        const cardResults = await db.query(`SELECT id, 
-                                                   name, 
-                                                   images, 
-                                                   set_name AS "setName", 
-                                                   set_logo AS "setLogo"
+        const cardResults = await db.query(`SELECT c.id, 
+                                                   c.name, 
+                                                   c.images, 
+                                                   c.set_name AS "setName", 
+                                                   c.set_logo AS "setLogo"
                                             FROM cards c
                                             INNER JOIN users_cards 
                                                 ON c.id = users_cards.card_id
-                                            INNER JOIN cards_in_users_decks u
+                                            INNER JOIN cards_in_decks u
                                                 ON u.users_cards_id = users_cards.id
                                             WHERE u.deck_id = $1`, [deckId]);
         const cards = cardResults.rows.map(card => {
@@ -52,16 +52,16 @@ class CardsInDecks {
     static async _addCards(deckId, addArr) {
         const lastIdx = addArr.length + 1;
         const sqlValues = addArr.map((cardId, idx) => {
-            return `($${lastIdx}, $${idx})`
+            return `($${lastIdx}, $${idx + 1})`
         });
         const sqlString = sqlValues.join(", ");
 
-        const addCard = await db.query(`INSERT INTO cards_in_users_decks
+        const addCard = await db.query(`INSERT INTO cards_in_decks
                                         (deck_id, users_cards_id)
                                         VALUES ${sqlString}
-                                        RETURNING deck_id AS "deckId", users_cards_id AS "cardId"`, [...addArr, deckId]);
+                                        RETURNING deck_id AS "deckId", users_cards_id AS "usersCardId"`, [...addArr, deckId]);
 
-        const addedCards = addCard.rows;
+        const addedCards = addCard.rows[0];
 
         return addedCards;
     };
@@ -73,15 +73,15 @@ class CardsInDecks {
     */
     static async _removeCards(deckId, removeArr) {
         const lastIdx = removeArr.length + 1;
-        const sqlValues = addArr.map((cardId, idx) => {
-            return `(deck_id = $${lastIdx} AND card_id = $${idx})`
+        const sqlValues = removeArr.map((cardId, idx) => {
+            return `deck_id=$${lastIdx} AND users_cards_id=$${idx + 1}`
         });
         const sqlString = sqlValues.join(", ");
         const remove = await db.query(`DELETE
-                                       FROM cards_in_users_decks
+                                       FROM cards_in_decks
                                        WHERE ${sqlString}
-                                       RETURNING deck_id AS "deckId", users_cards_id AS "cardId"`, [...removeArr, deckId]);
-
+                                       RETURNING deck_id AS "deckId", users_cards_id AS "usersCardId"`, [...removeArr, deckId]);
+        console.log(remove.rows[0])
         const removedCards = remove.rows[0];
 
         return removedCards;
@@ -97,11 +97,10 @@ class CardsInDecks {
     }
     */
     static async updateDeckCards(deckId, removeArr, addArr) {
-        const removed = this._removeCards(deckId, removeArr);
-        const added = this._addCards(deckId, addArr);
-
+        const removed = await this._removeCards(deckId, removeArr);
+        const added = await this._addCards(deckId, addArr);
         return { removed, added };
     };
 };
 
-module.exports = { CardsInDecks };
+module.exports = CardsInDecks;

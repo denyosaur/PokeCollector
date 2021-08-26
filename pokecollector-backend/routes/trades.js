@@ -28,7 +28,7 @@ router.get("/:username", ensureCorrectUserOrAdmin, async function (req, res, nex
 
         const trades = await Trades.getAllUserTrades(username);
 
-        return res.json({ trades });
+        return res.json(trades);
     } catch (error) {
         return next(error);
     };
@@ -57,9 +57,7 @@ router.post("/:username/create", ensureCorrectUserOrAdmin, async function (req, 
     try {
         jsonValidate(req.body, tradesNewSchema); //json validator helper function
 
-        const { seller, buyer, offers, message } = req.body;
-
-        const trade = await Trades.createTrade(seller, buyer, offers, message);
+        const trade = await Trades.createTrade(req.body);
 
         return res.status(201).json({ trade });
     } catch (error) {
@@ -77,9 +75,9 @@ router.post("/:username/:tradeId/sendMessage", ensureCorrectUserOrAdmin, async f
         const { message } = req.body;
         const { username, tradeId } = req.params;
 
-        const message = await Messages.createMessage(tradeId, username, message);
+        const msg = await Messages.createMessage(tradeId, username, message);
 
-        return res.status(201).json({ message });
+        return res.status(201).json({ message: msg });
     } catch (error) {
         return next(error);
     };
@@ -114,6 +112,7 @@ router.post("/:username/:tradeId/accept", ensureCorrectUserOrAdmin, async functi
         const { username, tradeId } = req.params;
 
         const trade = await Trades.getTrade(tradeId);
+
         const tradeStatus = await trade.acceptOffer(username);
 
         return res.status(201).json({ completed: tradeStatus });
@@ -150,9 +149,9 @@ router.delete("/:username/:tradeId/delete", ensureCorrectUserOrAdmin, async func
         const { tradeId } = req.params;
 
         const trade = await Trades.getTrade(tradeId);
-        const tradeId = await trade.deleteOffer(tradeId);
+        const deletedTradeId = await trade.deleteOffer(tradeId);
 
-        return res.status(201).json({ deleted: tradeId });
+        return res.status(201).json({ deleted: deletedTradeId });
     } catch (error) {
         return next(error);
     };
@@ -174,3 +173,5 @@ router.delete("/:username/:msgId", ensureCorrectUserOrAdmin, async function (req
         return next(error);
     }
 });
+
+module.exports = router;

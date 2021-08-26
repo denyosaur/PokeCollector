@@ -1,7 +1,7 @@
 "use strict";
 
 const db = require("../db");
-const { NotFoundError } = require("../expressError");
+const { NotFoundError } = require("../expressErrors");
 const CardsInDecks = require("./cards_in_decks")
 
 /* Functions for Deck Building */
@@ -21,14 +21,14 @@ class Deck {
     static async createDeck(newDeck) {
         const { username, deckName } = newDeck;
 
-        const deckResult = await db.query(`INSERT INTO users_decks
+        const deckResult = await db.query(`INSERT INTO decks
                                            (username, deck_name)
                                            VALUES ($1, $2)
-                                           RETURNING id, username, deck_name AS "deckName"`, [username, deckName]);
+                                           RETURNING id, username AS "newUsername", deck_name AS "newDeckName"`, [username, deckName]);
 
-        const { id, username, deckName } = deckResult.rows[0];
+        const { id, newUsername, newDeckName } = deckResult.rows[0];
 
-        return new Deck(id, username, deckName);
+        return new Deck(id, newUsername, newDeckName);
     };
 
     /* Get All Deck that the User Owns
@@ -36,11 +36,11 @@ class Deck {
     then makes a query to pull all the decks that the user owns
     returns array [{deckName1}, {deckName2}, ...]
     */
-    static async getAllDecks(username) {
+    static async getAllDecks(uname) {
         const result = await db.query(`SELECT id, username, deck_name AS "deckName"
-                                       FROM user_decks
+                                       FROM decks
                                        WHERE username = $1
-                                       ORDER BY deck_name`, [username]);
+                                       ORDER BY deck_name`, [uname]);
 
         const decks = result.rows.map(deck => {
             const { id, username, deckName } = deck;
@@ -57,7 +57,7 @@ class Deck {
     */
     static async getDeck(deckId) {
         const result = await db.query(`SELECT id, username, deck_name AS "deckName"
-                                       FROM user_decks
+                                       FROM decks
                                        WHERE id = $1`, [deckId]);
 
         if (!result.rows[0]) throw new NotFoundError(`No Deck with ID of ${deckId}`);
@@ -69,19 +69,19 @@ class Deck {
 
     /* Update Card Deck Name
     accepts username and an object named data {currentDeckName, updatedDeckName}
-    check if currentDeckName in data object exists in users_decks. if not, throw BadRequestError
+    check if currentDeckName in data object exists in decks. if not, throw BadRequestError
     make query request to change the currentDeckName to updatedDeckName
     return newDeckName 
     */
     async updateDeckName(newName) {
-        const result = await db.query(`UPDATE users_decks
+        const result = await db.query(`UPDATE decks
                                        SET deck_name = $1
                                        WHERE id = $2
-                                       RETURNING deck_name AS "deckName"`[newName, this.deckId]);
+                                       RETURNING id, username, deck_name AS "deckName"`, [newName, this.deckId]);
 
-        const newDeckName = result.rows[0];
+        const { id, username, deckName } = result.rows[0];
 
-        return newDeckName;
+        return new Deck(id, username, deckName);
     };
 
     /* Delete Card Deck
@@ -91,12 +91,11 @@ class Deck {
     */
     async delete() {
         const result = await db.query(`DELETE 
-                                       FROM users_decks
+                                       FROM decks
                                        WHERE id = $1
                                        RETURNING id, username, deck_name AS "deckName"`, [this.deckId]);
 
         const deck = result.rows[0];
-
         return deck;
     };
 
@@ -106,7 +105,6 @@ class Deck {
     */
     async getCards() {
         const cards = await CardsInDecks.getAllCards(this.deckId);
-
         return cards;
     };
 
@@ -121,8 +119,8 @@ class Deck {
     */
     async updateCards(removeArr, addArr) {
         const updated = await CardsInDecks.updateDeckCards(this.deckId, removeArr, addArr);
-        return { updated };
+        return updated;
     };
 };
 
-module.exports = { Deck };
+module.exports = Deck;

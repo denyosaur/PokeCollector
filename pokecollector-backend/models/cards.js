@@ -3,7 +3,7 @@
 const db = require("../db");
 const axios = require("axios");
 
-const { NotFoundError, BadRequestError } = require("../expressError");
+const { NotFoundError, BadRequestError } = require("../expressErrors");
 
 /* Model for cards in the DB. Holds related functions.*/
 
@@ -40,13 +40,11 @@ class Cards {
     return array of Cards object
     */
     static async pullAndPushCards(setName) {
-        const url = "https://api.pokemontcg.io/v2/cards";
-        const query = {
-            q: `set.name:${setName}`
-        };
+        const url = `https://api.pokemontcg.io/v2/cards?q=set.id%3A${setName}`;
 
-        const result = await axios.get(url, { params: query });
-        const cards = result.data.map(card => {
+        const result = await axios.get(url);
+
+        const cards = await Promise.all(result.data.data.map(async (card) => {
             const newCard = {
                 "id": card.id,
                 "name": card.name,
@@ -70,10 +68,11 @@ class Cards {
                 "legalities": card.legalities,
                 "images": card.images.large,
                 "tcgplayer": card.tcgplayer,
-                "prices": card.tcgplayer.prices
+                "prices": card.tcgplayer.prices.mid
             };
-            return this._create(newCard);
-        });
+            const uploadedCard = await this._create(newCard);
+            return uploadedCard;
+        }));
 
         return cards;
     };
@@ -84,45 +83,19 @@ class Cards {
         if ID exists, return BadRequestError for duplicate.
         if card doesn't exist, create a new entry for card in card_library
     */
-    static async _create({ id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices }) {
-        const duplicateCheck = await db.query(`SELECT card_id AS "cardId"
+    static async _create({ id, name, superType, subtype, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices }) {
+        const duplicateCheck = await db.query(`SELECT id AS "cardId"
                                                FROM cards
-                                               WHERE card_name = $1 AND setName = $2`, [name, setName]);
-
-        //check if the new card is already in DB
-        if (duplicateCheck.rows[0]) throw new BadRequestError(`Duplicate entry for: ${card_id}, ${card_name} `)
+                                               WHERE id = $1`, [id]);
+        if (duplicateCheck.rows[0]) throw new BadRequestError(`Duplicate entry for: ${id}, ${name} `);
 
         const res = await db.query(`
         INSERT INTO cards
         (id, name, supertype, subtypes, hp, types, evolves_to, rules, attacks, weaknesses, resistances, retreat_cost, converted_retreat_cost, set_name, set_logo, number, artist, rarity, national_pokedex_numbers, legalities, images, tcgplayer, prices)
-        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)
-        RETURNING id,
-                  name,
-                  supertype,
-                  subtypes,
-                  hp,
-                  types,
-                  evolves_to AS "evolvesTo",
-                  rules,
-                  attacks,
-                  weaknesses,
-                  resistances,
-                  retreat_cost AS "retreatCost",
-                  converted_retreat_cost AS "convertedRetreatCost",
-                  set_name AS "setName",
-                  set_logo AS "setLogo",
-                  number,
-                  artist,
-                  rarity,
-                  national_pokedex_numbers AS "nationalPokedexNumbers",
-                  legalities,
-                  images,
-                  tcgplayer,
-                  prices`, [id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices])
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)`,
+            [id, name, superType, subtype, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, +prices]);
 
-        const { id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices } = res.rows[0];
-
-        return new Cards(id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices);
+        return new Cards(id, name, superType, subtype, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices);
     };
 
 
@@ -131,8 +104,8 @@ class Cards {
     query variable holds the base SQL query. whereExpressions will hold the sql query strings for search filters. Where statements hold the syntax for db.query.
     queryValues holds the actual values that will be put in with the db.query
     */
-    static async findAll(searchFilters = {}) {
-        const query = `SELECT id,
+    static async findAll({ name, minPrice, maxPrice, rarity, types, setName } = {}) {
+        let query = `SELECT id,
                             name,
                             supertype,
                             subtypes,
@@ -159,34 +132,31 @@ class Cards {
         let whereExpressions = []; //array to hold the parts of the WHERE constraints
         let queryValues = []; //array to hold the values used to replace
 
-        const { name, minPrice, maxPrice, rarity, types, setName } = searchFilters;
-
         //name, minPrice, maxPrice, rarity, types, setName are all the possible saerch terms.
         //for each search query, create and push into where expressions the SQL syntax.
         if (name) { //name query
-            queryValues.push(`% ${name}% `);
+            queryValues.push(`%${name}%`);
             whereExpressions.push(`name ILIKE $${queryValues.length} `);
         }
         if (minPrice !== undefined) {//minimum price query
             queryValues.push(minPrice);
-            whereExpressions.push(`price >= $${queryValues.length} `);
+            whereExpressions.push(`prices >= $${queryValues.length} `);
         };
         if (maxPrice !== undefined) {//maximum price query
             queryValues.push(maxPrice);
-            whereExpressions.push(`price <= $${queryValues.length} `);
+            whereExpressions.push(`prices <= $${queryValues.length} `);
         };
         if (rarity !== undefined) {//rarity query
             queryValues.push(rarity);
-            whereExpressions.push(`rarity = $${queryValues.length} `);
+            whereExpressions.push(`rarity ILIKE $${queryValues.length} `);
         };
         if (types !== undefined) {//types query, searches through array in SQL
-            let sqlTypes = `{ "${types}" } `
-            queryValues.push(sqlTypes);
-            whereExpressions.push(`types @> $${queryValues.length} `);
+            queryValues.push(types);
+            whereExpressions.push(`$${queryValues.length}=ANY(types)`);
         };
         if (setName !== undefined) {//set name query
             queryValues.push(setName);
-            whereExpressions.push(`setName = $${queryValues.length} `);
+            whereExpressions.push(`set_name = $${queryValues.length} `);
         };
 
         //Create Where statement by combining all search queries from above
@@ -200,8 +170,8 @@ class Cards {
         const cardResponse = await db.query(query, queryValues);
 
         const cards = cardResponse.rows.map(card => {
-            const { id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices } = card;
-            return new Cards(id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices);
+            const { id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices } = card;
+            return new Cards(id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices);
         });
 
         return cards;
@@ -212,7 +182,7 @@ class Cards {
         returns all information about card
     */
     static async getCardInfo(cardId) {
-        let query = await db.query(`SELECT id,
+        const result = await db.query(`SELECT id,
                                            name,
                                            supertype,
                                            subtypes,
@@ -237,10 +207,10 @@ class Cards {
                                            prices
                                    FROM cards
                                    WHERE id = $1`, [cardId]);
-        if (!query) throw new NotFoundError(`No card with ID: ${cardId} `);
+        if (!result) throw new NotFoundError(`No card with ID: ${cardId} `);
 
-        const { id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices } = query.rows[0];
-        return new Card(id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices);
+        const { id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices } = result.rows[0];
+        return new Cards(id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices);
     };
 
     /*Delete a card in the card table.
@@ -275,4 +245,4 @@ class Cards {
 
 }
 
-module.exports = { Cards };
+module.exports = Cards;

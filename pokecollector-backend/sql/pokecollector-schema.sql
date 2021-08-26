@@ -30,7 +30,7 @@ CREATE TABLE messages (
 CREATE TABLE cards (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
-    supertype TEXT NOT NULL,
+    supertype TEXT,
     subtypes TEXT[],
     hp TEXT,
     types TEXT[],
@@ -50,7 +50,7 @@ CREATE TABLE cards (
     legalities TEXT,
     images TEXT,
     tcgplayer TEXT,
-    prices TEXT
+    prices NUMERIC
 );
 
 CREATE TABLE users_cards (
@@ -59,14 +59,14 @@ CREATE TABLE users_cards (
     card_id TEXT NOT NULL REFERENCES cards(id) ON DELETE CASCADE
 );
 
-CREATE TABLE users_decks (
+CREATE TABLE decks (
     id SERIAL PRIMARY KEY,
     username TEXT NOT NULL REFERENCES users(username) ON DELETE CASCADE,
     deck_name TEXT NOT NULL
 );
 
-CREATE TABLE cards_in_users_decks (
+CREATE TABLE cards_in_decks (
     id SERIAL PRIMARY KEY,
-    deck_id INTEGER NOT NULL REFERENCES users_decks(id) ON DELETE CASCADE,
+    deck_id INTEGER NOT NULL REFERENCES decks(id) ON DELETE CASCADE,
     users_cards_id INTEGER NOT NULL REFERENCES users_cards(id) ON DELETE CASCADE
 );

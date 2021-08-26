@@ -55,7 +55,7 @@ VALUES ('base1-46',
         '50',
         ARRAY ['Fire'],
         ARRAY ['Charmeleon'],
-        ARRAY ['null'],
+        ARRAY ['None'],
         ARRAY [
         '{
           "name": "Scratch",
@@ -77,12 +77,7 @@ VALUES ('base1-46',
           "text": "Discard 1 Fire Energy card attached to Charmander in order to use this attack."
         }'
       ],
-        ARRAY [
-        '{
-          "type": "Water",
-          "value": "×2"
-        }'
-      ],
+        ARRAY ['{"type": "Water","value": "×2"}'],
         ARRAY ['null'],
         ARRAY ['Colorless'],
         1,
@@ -93,8 +88,7 @@ VALUES ('base1-46',
         'Common',
         ARRAY [4],
         '{"unlimited": "Legal"}',
-        '{"small": "https://images.pokemontcg.io/base1/46.png",
-          "large": "https://images.pokemontcg.io/base1/46_hires.png"}',
+        'https://images.pokemontcg.io/base1/46_hires.png',
         '{
         "url": "https://prices.pokemontcg.io/tcgplayer/base1-46",
         "updatedAt": "2021/08/19",
@@ -106,7 +100,7 @@ VALUES ('base1-46',
             "market": 1.57,
             "directLow": 1.04
           }}}',
-        '1.57'),
+        1.57),
         ('base1-44',
          'Bulbasaur',
          'Pokémon',
@@ -114,7 +108,7 @@ VALUES ('base1-46',
           '50',
           ARRAY ['Grass'],
           ARRAY ['Ivysaur'],
-          ARRAY ['null'],
+          ARRAY ['None'],
           ARRAY ['{
           "name": "Leech Seed",
           "cost": ["Grass","Grass"],
@@ -126,7 +120,7 @@ VALUES ('base1-46',
           "type": "Fire",
           "value": "×2"
             }'],
-          ARRAY ['null'],
+          ARRAY ['RESISTS'],
           ARRAY ['Colorless'],
           1,
           'Base',
@@ -136,8 +130,7 @@ VALUES ('base1-46',
           'Common',
           ARRAY [1],
           '{"unlimited": "Legal"}',
-          '{"small": "https://images.pokemontcg.io/base1/44.png",
-            "large": "https://images.pokemontcg.io/base1/44_hires.png"}',
+          'https://images.pokemontcg.io/base1/46_hires.png',
           '{
             "url": "https://prices.pokemontcg.io/tcgplayer/base1-44",
             "updatedAt": "2021/08/22",
@@ -149,7 +142,7 @@ VALUES ('base1-46',
                 "market": 2.21,
                 "directLow": 1.29
             }}}',
-            '2.5'),
+            2.5),
             ('base1-63',
         'Squirtle',
         'Pokémon',
@@ -157,7 +150,7 @@ VALUES ('base1-46',
         '40',
         ARRAY ['Water'],
         ARRAY ['Wartortle'],
-        ARRAY ['null'],
+        ARRAY ['None'],
         ARRAY [
         '{
           "name": "Bubble",
@@ -192,8 +185,7 @@ VALUES ('base1-46',
         'Common',
         ARRAY [7],
         '{"unlimited": "Legal"}',
-        '{"small": "https://images.pokemontcg.io/base1/63.png",
-          "large": "https://images.pokemontcg.io/base1/63_hires.png"}',
+        'https://images.pokemontcg.io/base1/63_hires.png',
         '{
         "url": "https://prices.pokemontcg.io/tcgplayer/base1-63",
         "updatedAt": "2021/08/22",
@@ -206,7 +198,7 @@ VALUES ('base1-46',
             "directLow": 0.9
           }
         }}',
-        '4.06'),
+        4.06),
         
         ('base1-58',
         'Pikachu',
@@ -215,7 +207,7 @@ VALUES ('base1-46',
         '40',
         ARRAY ['Lightning'],
         ARRAY ['Raichu'],
-        ARRAY ['null'],
+        ARRAY ['None'],
         ARRAY [
         '{
           "name": "Gnaw",
@@ -253,21 +245,20 @@ VALUES ('base1-46',
         'Common',
         ARRAY [25],
         '{"unlimited": "Legal"}',
-        '{"small": "https://images.pokemontcg.io/base1/58.png",
-          "large": "https://images.pokemontcg.io/base1/58_hires.png"}',
+        'https://images.pokemontcg.io/base1/58_hires.png',
         '{
         "url": "https://prices.pokemontcg.io/tcgplayer/base1-58",
         "updatedAt": "2021/08/22",
         "prices": {
           "normal": {
-            "low": 0.99,
+            "low": 0.99,+
             "mid": 3.45,
             "high": 63.44,
             "market": 3.82,
             "directLow": 1.7
           }
         }',
-        '3.45'),
+        3.45),
 
         ('base2-10',
         'Scyther',
@@ -276,7 +267,7 @@ VALUES ('base1-46',
         '70',
         ARRAY ['Grass'],
         ARRAY ['Scizor'],
-        ARRAY ['null'],
+        ARRAY ['None'],
         ARRAY [
         '{
           "name": "Swords Dance",
@@ -320,8 +311,7 @@ VALUES ('base1-46',
         'Rare Holo',
         ARRAY [123],
         '{"unlimited": "Legal"}',
-        '{"small": "https://images.pokemontcg.io/base2/10.png",
-          "large": "https://images.pokemontcg.io/base2/10_hires.png"}',
+        'https://images.pokemontcg.io/base2/10_hires.png',
         '{
         "url": "https://prices.pokemontcg.io/tcgplayer/base2-10",
         "updatedAt": "2021/08/22",
@@ -341,23 +331,24 @@ VALUES ('base1-46',
             "directLow": 39.38
           }
         }',
-        '24.47');
+        24.47);
 
 
 INSERT INTO users_cards (username, card_id)
 VALUES ('testuser','base1-46'),
        ('testuser','base1-58'),
        ('testuser','base1-44'),
+       ('testuser','base2-10'),
        ('testadmin','base2-10'),
        ('testadmin','base1-63');
 
-INSERT INTO users_decks (username, deck_name)
+INSERT INTO decks (username, deck_name)
 VALUES ('testuser','card deck #1'),
        ('testuser','card deck #2'),
        ('testadmin','admin deck #3'),
        ('testadmin','admin deck #4');
 
-INSERT INTO cards_in_users_decks (deck_id, users_cards_id)
+INSERT INTO cards_in_decks (deck_id, users_cards_id)
 VALUES (1,1),
        (1,2),
        (1,3),

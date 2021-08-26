@@ -1,5 +1,5 @@
 const jsonschema = require("jsonschema");
-const { BadRequestError } = require("../expressError");
+const { BadRequestError } = require("../expressErrors");
 
 function jsonValidate(body, schema) {
     const validate = jsonschema.validate(body, schema);

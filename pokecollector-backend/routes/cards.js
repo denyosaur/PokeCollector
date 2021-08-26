@@ -6,8 +6,8 @@ const express = require("express");
 
 const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 
-const { Cards } = require("../models/cards");
-const { UsersCards } = require("../models/cards");
+const Cards = require("../models/cards");
+const UsersCards = require("../models/users_cards");
 
 const { jsonValidate } = require("../helpers/jsonvalidator-helpers");
 const cardNewSchema = require("../schemas/cardNew.json");
@@ -62,20 +62,17 @@ router.get("/:cardId", async function (req, res, next) {
 /* GET cards/:username =>  { cardIds }
 Returns list of cards that user owns - Correct User or Admin Only
 */
-router.get("/:username", ensureLoggedIn, async function (req, res, next) {
+router.get("/user/:username", ensureLoggedIn, async function (req, res, next) {
     try {
         const { username } = req.params;
 
         const cards = await UsersCards.getUsersCards(username);
+
         return res.json({ cards });
     } catch (error) {
         return next(error);
     };
 });
-
-
-
-
 
 /*********ADMIN ONLY*********/
 
@@ -88,42 +85,20 @@ router.post("/createCard", ensureAdmin, async function (req, res, next) {
     try {
         jsonValidate(req.body, cardNewSchema);
 
-        const { card } = req.body;
-        const newCard = {
-            "name": card.name,
-            "superType": card.supertype,
-            "subtype": card.subtype,
-            "hp": card.hp,
-            "types": card.types,
-            "evolvesTo": card.evolvesTo,
-            "rules": card.rules,
-            "attacks": card.attacks,
-            "weaknesses": card.weaknesses,
-            "retreatCost": card.retreatCost,
-            "convertedRetreatCost": card.convertedRetreatCost,
-            "setName": card.set.name,
-            "setLogo": card.set.images.logo,
-            "number": card.number,
-            "artist": card.artist,
-            "rarity": card.rarity,
-            "nationalPokedexNumbers": card.nationalPokedexNumbers,
-            "legalities": card.legalities,
-            "images": card.images.large,
-            "tcgplayer": card.tcgplayer,
-            "prices": card.tcgplayer.prices
-        };
-        const newCards = await Cards.create(newCard);
+        const card = req.body;
+        const newCards = await Cards._create(card);
+
         return res.json({ newCards });
     } catch (error) {
         return next(error);
     };
 });
 
-router.post("/pullCards/:setName", ensureAdmin, async function (req, res, next) {
+router.post("/pullCards/:setId", ensureAdmin, async function (req, res, next) {
     try {
-        const { setName } = req.params;
+        const { setId } = req.params;
 
-        const newCards = await Cards.pullAndPushCards(setName);
+        const newCards = await Cards.pullAndPushCards(setId);
 
         return res.json({ newCards });
     } catch (error) {
@@ -135,11 +110,12 @@ router.post("/pullCards/:setName", ensureAdmin, async function (req, res, next) 
 route to delete a card by id - only admins allowed
 returns deleted card ID
 */
-router.post("/delete/:cardId", ensureAdmin, async function (req, res, next) {
+router.delete("/delete/:cardId", ensureAdmin, async function (req, res, next) {
     try {
-        const { card } = req.params;
+        const { cardId } = req.params;
 
-        const deletedCard = await Cards.delete(card);
+        const card = await Cards.getCardInfo(cardId);
+        const deletedCard = await card.delete(card);
 
         return res.json({ deletedCard });
     } catch (error) {

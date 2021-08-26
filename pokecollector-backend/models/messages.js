@@ -5,10 +5,10 @@ const db = require("../db");
 /* Functions for Messages */
 
 class Messages {
-    constructor(id, tradeId, userId, message, timestamp) {
+    constructor(id, tradeId, username, message, timestamp) {
         this.id = id;
         this.tradeId = tradeId;
-        this.userId = userId;
+        this.username = username;
         this.message = message;
         this.timestamp = timestamp;
     };
@@ -19,29 +19,29 @@ class Messages {
     make db request to INSERT a new message row
     return newMessage object {tradeId, userId, message, timestamp}
     */
-    static async createMessage(tradeId, username, message) {
+    static async createMessage(newTradeId, uname, newMessage) {
         const currTime = new Date();
 
         const createMessage = await db.query(`INSERT INTO messages
-                                              (trade_id, user_id, message, timestamp)
+                                              (trade_id, username, message, timestamp)
                                               VALUES ($1, $2, $3, $4)
                                               RETURNING id,
                                                         trade_id AS "tradeId",
-                                                        username AS,
+                                                        username,
                                                         message,
                                                         timestamp`,
-            [tradeId, username, message, currTime]);
+            [newTradeId, uname, newMessage, currTime]);
 
-        const { id, tradeId, userId, message, timestamp } = createMessage.rows[0];
+        const { id, tradeId, username, message, timestamp } = createMessage.rows[0];
 
-        return new Messages(id, tradeId, userId, message, timestamp);
+        return new Messages(id, tradeId, username, message, timestamp);
     };
 
     /*Get All Messages by Trade ID
     check that the trade ID exists, if not, throw NotFoundError
 
     select all messages where trade_id that matches the passed in ID
-    return result [{tradeId, fromUserId, toUserId, message, timestamp}, ...]
+    return result [{tradeId, fromUserId, toUsername, message, timestamp}, ...]
     */
     static async getAllMessages(tradeId) {
         const result = await db.query(`SELECT id,
@@ -53,8 +53,8 @@ class Messages {
                                        WHERE trade_id = $1`, [tradeId]);
 
         const messages = result.rows.map(msg => {
-            const { id, tradeId, userId, message, timestamp } = msg.rows;
-            return new Messages(id, tradeId, userId, message, timestamp);
+            const { id, tradeId, username, message, timestamp } = msg;
+            return new Messages(id, tradeId, username, message, timestamp);
         })
 
         return messages;
@@ -72,9 +72,9 @@ class Messages {
                                               timestamp
                                        FROM messages
                                        WHERE id = $1`, [msgId]);
-        const { id, tradeId, userId, message, timestamp } = result.rows[0];
+        const { id, tradeId, username, message, timestamp } = result.rows[0];
 
-        return new Messages(id, tradeId, userId, message, timestamp);
+        return new Messages(id, tradeId, username, message, timestamp);
     };
 
     /*Edit Message
@@ -92,9 +92,9 @@ class Messages {
                                                  username, 
                                                  message, 
                                                  timestamp`, [newMsg, currTime, this.id]);
-        const { id, tradeId, userId, message, timestamp } = result.rows[0];
+        const { id, tradeId, username, message, timestamp } = result.rows[0];
 
-        return new Messages(id, tradeId, userId, message, timestamp);
+        return new Messages(id, tradeId, username, message, timestamp);
     };
 
     /*Create New Message
@@ -112,4 +112,4 @@ class Messages {
     };
 }
 
-module.exports = { Messages };
+module.exports = Messages;

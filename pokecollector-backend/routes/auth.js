@@ -4,9 +4,9 @@
 
 const express = require("express");
 
-const User = require("../models/user");
+const Users = require("../models/users");
 
-const { createToken } = require("../helpers/tokens");
+const { createToken } = require("../helpers/token-helpers");
 
 const { jsonValidate } = require("../helpers/jsonvalidator-helpers");
 const userAuthSchema = require("../schemas/userAuth.json");
@@ -26,7 +26,8 @@ router.post("/token", async function (req, res, next) {
 
         //check that username exists and password is correct
         const { username, password } = req.body;
-        const user = await User.authenticate(username, password);
+
+        const user = await Users.authenticate(username, password);
         const token = createToken(user);
 
         return res.json({ token });
@@ -46,11 +47,15 @@ router.post("/register", async function (req, res, next) {
     try {
         jsonValidate(req.body, userNewSchema);//validate username and password object schema
 
-        //check that username/email isnt a duplicate and register user
-        const newUser = await User.register({ ...req.body, isAdmin: false });
+        const { username, password, firstName, lastName, email } = req.body;
+
+        const newUser = await Users.register(username, password, firstName, lastName, email);
         const token = createToken(newUser);
+
         return res.status(201).json({ token });
     } catch (error) {
         return next(error);
     }
 })
+
+module.exports = router;

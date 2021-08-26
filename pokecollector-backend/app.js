@@ -4,7 +4,7 @@ const app = express();
 
 const cors = require("cors");
 
-const { NotFoundError } = require("./expressError");
+const { NotFoundError } = require("./expressErrors");
 
 const { authenticateJWT } = require("./middleware/auth");
 
