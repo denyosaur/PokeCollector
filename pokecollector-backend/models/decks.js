@@ -36,7 +36,7 @@ class Deck {
     then makes a query to pull all the decks that the user owns
     returns array [{deckName1}, {deckName2}, ...]
     */
-    static async getAllDecks(uname) {
+    async getAllDecks(uname) {
         const result = await db.query(`SELECT id, username, deck_name AS "deckName"
                                        FROM decks
                                        WHERE username = $1
@@ -73,7 +73,7 @@ class Deck {
     make query request to change the currentDeckName to updatedDeckName
     return newDeckName 
     */
-    async updateDeckName(newName) {
+    static async updateDeckName(newName) {
         const result = await db.query(`UPDATE decks
                                        SET deck_name = $1
                                        WHERE id = $2
@@ -89,7 +89,7 @@ class Deck {
     if it doesn't exist, throw NotFoundError
     returns object: {id, username, deckName}
     */
-    async delete() {
+    static async delete() {
         const result = await db.query(`DELETE 
                                        FROM decks
                                        WHERE id = $1
@@ -103,7 +103,7 @@ class Deck {
     call method getAllCards from CardsInDecks with deck ID passed in
     returns object: [{id, name, images, setName, setLogo},...]
     */
-    async getCards() {
+    static async getCards() {
         const cards = await CardsInDecks.getAllCards(this.deckId);
         return cards;
     };
@@ -117,7 +117,7 @@ class Deck {
         added:{deckId, cardId}
     }}
     */
-    async updateCards(removeArr, addArr) {
+    static async updateCards(removeArr, addArr) {
         const updated = await CardsInDecks.updateDeckCards(this.deckId, removeArr, addArr);
         return updated;
     };

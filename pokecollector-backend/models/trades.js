@@ -2,7 +2,6 @@
 
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressErrors");
-const { sqlForPartialUpdate } = require("../helpers/sql-helpers");
 
 const UsersCards = require("./users_cards")
 const Messages = require("./messages")

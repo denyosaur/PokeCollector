@@ -59,7 +59,7 @@ router.get("/:cardId", async function (req, res, next) {
 
 /*********LOGGED IN*********/
 
-/* GET cards/:username =>  { cardIds }
+/* GET cards/:username =>  { cards: [{ownedId, username, cardId, cardInfo},...] }
 Returns list of cards that user owns - Correct User or Admin Only
 */
 router.get("/user/:username", ensureLoggedIn, async function (req, res, next) {
@@ -76,24 +76,10 @@ router.get("/user/:username", ensureLoggedIn, async function (req, res, next) {
 
 /*********ADMIN ONLY*********/
 
-/* POST /[handle]  =>  { deleted: handle }
-create new card entry to cards table - ADMIN ONLY
-{ id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, retreatCost, convertedRetreatCost, 
-    setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices }
+/* POST /pullCards/:setId  =>  { deleted: handle }
+route to pull cards from external API and upload their data to DB
+returns newCards object {newCards:[{card},...]}
 */
-router.post("/createCard", ensureAdmin, async function (req, res, next) {
-    try {
-        jsonValidate(req.body, cardNewSchema);
-
-        const card = req.body;
-        const newCards = await Cards._create(card);
-
-        return res.json({ newCards });
-    } catch (error) {
-        return next(error);
-    };
-});
-
 router.post("/pullCards/:setId", ensureAdmin, async function (req, res, next) {
     try {
         const { setId } = req.params;
@@ -106,7 +92,7 @@ router.post("/pullCards/:setId", ensureAdmin, async function (req, res, next) {
     };
 });
 
-/* DELETE /[handle]  =>  { deleted: handle }
+/* DELETE /:cardId  =>  { deletedCard: deleted }
 route to delete a card by id - only admins allowed
 returns deleted card ID
 */
@@ -115,7 +101,7 @@ router.delete("/delete/:cardId", ensureAdmin, async function (req, res, next) {
         const { cardId } = req.params;
 
         const card = await Cards.getCardInfo(cardId);
-        const deletedCard = await card.delete(card);
+        const deletedCard = await card.delete();
 
         return res.json({ deletedCard });
     } catch (error) {

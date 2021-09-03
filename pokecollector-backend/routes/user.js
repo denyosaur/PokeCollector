@@ -7,6 +7,7 @@ const express = require("express");
 const { ensureAdmin, ensureCorrectUserOrAdmin } = require("../middleware/auth");
 
 const Users = require("../models/users");
+const UsersCards = require("../models/users_cards");
 
 const { createToken } = require("../helpers/token-helpers");
 
@@ -16,9 +17,9 @@ const userUpdateSchema = require("../schemas/userUpdate.json");
 
 const router = express.Router();
 
-/*********CORRECT USER  OR ADMIN ONLY*********/
+/*********CORRECT USER OR ADMIN ONLY*********/
 
-/* GET user/:username =>  { username, firstName, lastName, email, isAdmin, currencyAmount, [cardIds] }
+/* GET user/:username =>  { username, firstName, lastName, email, isAdmin, currencyAmount }
 Returns user info and cards owned - Correct User or Admin Only
 */
 router.get("/:username", ensureCorrectUserOrAdmin, async function (req, res, next) {
@@ -34,10 +35,10 @@ router.get("/:username", ensureCorrectUserOrAdmin, async function (req, res, nex
 });
 
 /* PATCH user/:username =>  { user }
-update user info and cards owned - Correct User or Admin Only
+update user info - Correct User or Admin Only
 check inputs against jsonschema to validate that inputs are correct.if not throw BadRequestError
 send req.body(contains changes) and username to updateUserInfo
-return user
+return user object {updatedUser:{ username, firstName, lastName, email, isAdmin, currencyAmount }}
 */
 router.patch("/:username", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
@@ -45,9 +46,10 @@ router.patch("/:username", ensureCorrectUserOrAdmin, async function (req, res, n
 
         const { username } = req.params;
 
-        const user = await Users.updateUserInfo(username, req.body);
-        return res.json({ user });
+        const user = await Users.getUser(username);
+        const updatedUser = await user.updateUserInfo(req.body);
 
+        return res.json({ updatedUser });
     } catch (error) {
         return next(error);
     }

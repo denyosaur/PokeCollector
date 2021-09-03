@@ -1,0 +1,30 @@
+.Navbar-register {
+    background-color: white;
+    position:relative;
+    top:25%;
+    height:100%;
+    width: 100%;
+    -webkit-box-shadow:0 0 10px rgba(0,0,0,0.4);
+    -moz-box-shadow:0 0 10px rgba(0,0,0,0.4); 
+    box-shadow:0 0 20px rgba(0,0,0,0.4);
+}
+
+.Register-form label {
+    left:auto;
+    right:auto
+}
+
+.Register-form input {
+    display: block;
+    margin-left:auto;
+    margin-right:auto;
+    width:40%;
+    left:50%;
+    right:50%
+}
+
+.Register-formClose {
+    position:absolute;
+    top:0%;
+    right:0%;
+}

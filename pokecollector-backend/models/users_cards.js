@@ -97,20 +97,6 @@ class UsersCards {
         return cards;
     };
 
-    /* Make Trade - used with Trades.acceptOffer()
-    take in seller id, buyer id, and offers
-    use addCardToUser and removeCardFromUser to add and remove cards accordingly
-    */
-    static async makeTrade(sellerName, buyerName, sellerOffer, buyerOffer) {
-        await this._checkOwnership(sellerName, sellerOffer);
-        await this._checkOwnership(buyerName, buyerOffer);
-
-        const buyersNew = await this._transfer(sellerName, buyerName, sellerOffer);
-        const sellersNew = await this._transfer(buyerName, sellerName, buyerOffer);
-
-        return { buyersNew, sellersNew };
-    };
-
     /* support function used to transfer ownership of cards in users_card*/
     static async _transfer(oldOwner, newOwner, toTrade) {
         const transferRes = await Promise.all(toTrade.map(async (cardId) => {
@@ -132,6 +118,20 @@ class UsersCards {
                                       FROM users_cards
                                       WHERE username = $1 AND card_id IN ($2)`, [username, searchStr]);
         if (check.rows.length !== toTrade.length) throw new BadRequestError(`User ${username}, does not own the selected cards.`)
+    };
+
+    /* Make Trade - used with Trades.acceptOffer()
+    take in seller id, buyer id, and offers
+    use addCardToUser and removeCardFromUser to add and remove cards accordingly
+    */
+    async makeTrade(sellerName, buyerName, sellerOffer, buyerOffer) {
+        await this._checkOwnership(sellerName, sellerOffer);
+        await this._checkOwnership(buyerName, buyerOffer);
+
+        const buyersNew = await this._transfer(sellerName, buyerName, sellerOffer);
+        const sellersNew = await this._transfer(buyerName, sellerName, buyerOffer);
+
+        return { buyersNew, sellersNew };
     };
 };
 

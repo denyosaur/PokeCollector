@@ -116,10 +116,10 @@ class Users {
 
     /*
     Update User's Own Info
-
+        can update first name, last name, and password
         return the user object: {user:{ username, firstName, lastName, email, isAdmin, currencyAmount }}
     */
-    static async updateUserInfo(uname, data) {
+    async updateUserInfo(data) {
         if (data.password) {
             data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
         }
@@ -144,10 +144,10 @@ class Users {
                                     currency_amount AS "currencyAmount",
                                     is_admin AS "isAdmin"`;
 
-        const result = await db.query(querySql, [...values, uname]);
+        const result = await db.query(querySql, [...values, this.username]);
         const { username, firstName, lastName, email, currencyAmount, isAdmin } = result.rows[0];
 
-        if (!result) throw new NotFoundError(`No user with username: ${username}`);
+        if (!result) throw new NotFoundError(`No user with username: ${this.username}`);
 
         return new Users(username, firstName, lastName, email, currencyAmount, isAdmin);
     };

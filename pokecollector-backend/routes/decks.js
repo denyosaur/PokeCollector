@@ -30,7 +30,7 @@ router.get("/:username", ensureCorrectUserOrAdmin, async function (req, res, nex
     };
 });
 
-/* GET /decks/:username => {deck, cards: [{id, name, images, setName, setLogo},...]}
+/* GET /decks/:username => {deck: {id, username, deckName}, cards: [{id, name, images, setName, setLogo},...]}
 get list of all cards in the deck
 */
 router.get("/:username/:deckId", ensureCorrectUserOrAdmin, async function (req, res, next) {
@@ -46,7 +46,7 @@ router.get("/:username/:deckId", ensureCorrectUserOrAdmin, async function (req, 
     };
 });
 
-/* POST /decks/:username => {deck: deckName}
+/* POST /decks/:username => {deck: {id, username, deckName}}
 create a new deck
 req.body must contain {username, deckName}
 */
@@ -97,13 +97,13 @@ router.post("/:username/:deckId", ensureCorrectUserOrAdmin, async function (req,
         const deck = await Decks.getDeck(deckId);
         const updated = await deck.updateCards(remove, add);
 
-        return res.json({ updated });
+        return res.json(updated);
     } catch (error) {
         return next(error);
     };
 });
 
-/* DELETE /decks/:username/:deckId => {deleted: {username, deckName}}
+/* DELETE /decks/:username/:deckId => {deleted: {id, username, deckName}}
 delete entire deck
 */
 router.delete("/:username/:deckId", ensureCorrectUserOrAdmin, async function (req, res, next) {
@@ -111,9 +111,9 @@ router.delete("/:username/:deckId", ensureCorrectUserOrAdmin, async function (re
         const { deckId } = req.params;
 
         const deck = await Decks.getDeck(deckId);
-        const deleted = await deck.delete();
+        await deck.delete();
 
-        return res.json({ deleted });
+        return res.json({ "deleted": deck });
     } catch (error) {
         return next(error);
     };
