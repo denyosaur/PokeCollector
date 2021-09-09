@@ -14,10 +14,14 @@ function App() {
 
   return (
     <div className="App">
+
       <BrowserRouter>
-        <NavbarComp authed={authed} />
-        <Routes setAuthed={setAuthed} />
+        <NavbarComp authed={authed} setAuthed={setAuthed} />
+        <div className="App-container">
+          <Routes setAuthed={setAuthed} />
+        </div>
       </BrowserRouter>
+
     </div>
   )
 };

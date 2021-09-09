@@ -116,20 +116,40 @@ class Users {
 
     /*
     Update User's Own Info
-        can update first name, last name, and password
+        can only patch first name, last name, email, and password
+        data should contain {
+            firstName,
+            lastName,
+            email,
+            currency,
+            password, //new password
+            currPassword, //old password
+            username
+        }
+        user currPassword to check that it matches with old password in DB. if incorrect, throw BadRequestError
+        use bcrypt to hash the new password.
+        use sqlForPartialUpdate helper to create SQL syntax for inserting updated data
         return the user object: {user:{ username, firstName, lastName, email, isAdmin, currencyAmount }}
     */
     async updateUserInfo(data) {
-        if (data.password) {
-            data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
-        }
+        const res = await db.query(`SELECT password
+                                           FROM users 
+                                           WHERE username = $1`, [this.username]);
+        const hasedPassword = res.rows[0].password;
+        const isValidPassword = await bcrypt.compare(data.currPassword, hasedPassword);
+        if (!isValidPassword) throw new BadRequestError("Incorrect current password. Please re-enter your current password.");
+        delete data.currPassword;
+
+        //hash the new password
+        if (data.password) data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
 
         const { setCols, values } = sqlForPartialUpdate(
             data,
             {
                 firstName: "first_name",
                 lastName: "last_name",
-                password: "password"
+                password: "password",
+                email: "email"
             }
         );
 

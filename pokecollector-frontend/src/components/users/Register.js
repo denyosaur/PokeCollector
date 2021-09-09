@@ -1,44 +1,64 @@
-import React, { Link } from "react";
+import React from "react";
+import { useHistory } from "react-router-dom";
+
+import Button from 'react-bootstrap/Button';
 
 // import handleFormSubmit from "../../hooks/handleFormSubmit";
+
+import UsersApi from "../../api/users-api"
 import useFields from "../../hooks/useFields";
 
 import "../../css/register.css"
 
 const Register = ({ setAuthed, handleFormOpen }) => {
-    const [formData, handleChange] = useFields({
+    const history = useHistory();
+    const INITIAL_STATE = {
         username: "",
         password: "",
         firstName: "",
         lastName: "",
         email: ""
-    });
+    }
+
+    const [formData, setFormData] = useFields(INITIAL_STATE); //hook for field changes
+
+    const handleSubmit = async (evt) => {
+        evt.preventDefault(); //stop page from reloading
+
+        const registration = await UsersApi.register(formData); //make login request and get token
+
+        setAuthed(registration.token) //set authed to the token from localStorage
+        localStorage.setItem("authorization", registration.token); //store token in localStorage
+        localStorage.setItem("username", formData.username); //store username in localStorage
+        handleFormOpen({ evt: { target: { innerText: "reset" } } });
+        history.push("/"); //push homepage to history 
+    };
 
     return (
         <div className="Register">
             <h3 className="Register-header">Sign Up</h3>
-            <button onClick={handleFormOpen} className="Register-formClose">X</button>
+            <i class="bi bi-x-lg Register-formClose" onClick={handleFormOpen} ></i>
             <p className="Register-agreement">By continuing, you agree to our User Agreement and Privacy Policy.</p>
-            <form onSubmit={console.log("submitted")} className="Register-form">
+            <form onSubmit={handleSubmit} className="Register-form">
 
                 <label htmlFor="username"></label>
-                <input type="text" placeholder="Username" name="username" id="username" onChange={handleChange}></input>
+                <input type="text" placeholder="Username" name="username" id="username" onChange={setFormData}></input>
 
                 <label htmlFor="password"></label>
-                <input type="password" placeholder="Password" name="password" id="password" onChange={handleChange}></input>
+                <input type="password" placeholder="Password" name="password" id="password" onChange={setFormData}></input>
 
                 <label htmlFor="firstName"></label>
-                <input type="text" placeholder="First Name" name="firstName" id="firstName" onChange={handleChange}></input>
+                <input type="text" placeholder="First Name" name="firstName" id="firstName" onChange={setFormData}></input>
 
                 <label htmlFor="lastName"></label>
-                <input type="text" placeholder="Last Name" name="lastName" id="lastName" onChange={handleChange}></input>
+                <input type="text" placeholder="Last Name" name="lastName" id="lastName" onChange={setFormData}></input>
 
                 <label htmlFor="email"></label>
-                <input type="email" placeholder="Email" name="email" id="email" onChange={handleChange}></input>
+                <input type="email" placeholder="Email" name="email" id="email" onChange={setFormData}></input>
 
-                <button className="Register-button">Submit</button>
-                <div className="Register-register">
-                    <p>Already a Pokecollector? <a className="Register-signup" onClick={handleFormOpen}>Login</a></p>
+                <button className="Register-button">Register</button>
+                <div className="Register-switchform">
+                    <p>Already a Pokecollector? <a className="Register-login" onClick={handleFormOpen}>Login</a></p>
                 </div>
             </form>
         </div>

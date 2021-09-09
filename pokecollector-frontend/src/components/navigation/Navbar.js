@@ -1,53 +1,63 @@
 import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 
-import Login from "../users/Login";
-import Register from "../users/Register";
+import LoginRegPopup from "./LoginRegPopup";
 
 import "../../css/navbar.css"
 
-const NavbarComponent = ({ authed }) => {
-    let authStatus = localStorage.getItem("token") || false
-    let username = localStorage.getItem("username") || false
+const NavbarComponent = ({ authed, setAuthed }) => {
+    const history = useHistory();
+    let authStatus = localStorage.getItem("token") || false;
+    let username = localStorage.getItem("username") || false;
 
     const [openLogin, setOpenLogin] = useState("X");
 
-    const handleFormOpen = (evt) => {
-        setOpenLogin(evt.target.innerText)
+    //Navbar using React Bootstrap
+    const handleFormOpen = (formType) => {
+        const text = (typeof (formType.target) !== "undefined") ? formType.target.innerText : "not open";
+        setOpenLogin(text);
     }
 
     useEffect(() => {
-        authStatus = authed
+        authStatus = authed //authed contains the token
         username = localStorage.getItem("username")
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [authed])
+    }, [authed]) //when authed is updated with token from logging in, refresh this component
+
+    const logout = () => {
+        localStorage.clear();
+        setAuthed(false);
+        history.push("/");
+    }
 
     return (
         <div className="Navbar">
             <Navbar className="Navbar-section" expand="lg" collapseOnSelect >
-                <Container>
+                <Container className="Navbar-container">
                     <Navbar.Brand href="/" className="Navbar-brand">PokeCollector</Navbar.Brand>
                     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse id="responsive-navbar-nav">
                         <Nav className="Navbar-navigation">
-                            <Nav.Link exact to="/shop" className="Navbar-public">Shop Cards</Nav.Link>
-                            {authStatus === true && <>
+                            <Nav.Link href="/shop" className="Navbar-public">Shop Cards</Nav.Link>
+                            {authStatus && <>
+                                <Nav.Link exact to={'${username}'}>My Cards</Nav.Link>
                                 <Nav.Link exact to="/trades">My Trades</Nav.Link>
                                 <Nav.Link exact to="/decks">My Decks</Nav.Link>
                             </>}
                         </Nav>
-                        <Nav className="Navbar-auth">
-                            {authStatus === true
+                        <Nav className="Navbar-auth ms-auto">
+                            {authStatus
                                 ? <>
-                                    <Nav.Link exact to="/profile">{username}</Nav.Link>
-                                    <Nav.Link exact to="/checkout">Checkout</Nav.Link>
-                                    <Nav.Link exact to="/logout">Log Out</Nav.Link>
+                                    <Nav.Link exact to="/checkout"><i className="bi bi-cart2"></i>Cart</Nav.Link>
+                                    <Nav.Link href="profile">{username}</Nav.Link>
+                                    <Nav.Link onClick={logout}>Log Out</Nav.Link>
                                 </>
                                 : <>
-                                    <Nav.Link exact to="/checkout">Checkout</Nav.Link>
+                                    <Nav.Link exact to="/checkout"><i className="bi bi-cart2"></i>Cart</Nav.Link>
                                     <Nav.Link onClick={handleFormOpen} name="Login">Login</Nav.Link>
                                     <Nav.Link onClick={handleFormOpen} name="Sign Up">Sign Up</Nav.Link>
                                 </>}
@@ -55,22 +65,7 @@ const NavbarComponent = ({ authed }) => {
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
-            {openLogin === "Login" &&
-                <div className="Navbar-form">
-                    <Container className="Navbar-formContainer">
-                        <div className="Navbar-login">
-                            <Login handleFormOpen={handleFormOpen} />
-                        </div>
-                    </Container>
-                </div>}
-            {openLogin === "Sign Up" &&
-                <div className="Navbar-form">
-                    <Container className="Navbar-formContainer">
-                        <div className="Navbar-register">
-                            <Register handleFormOpen={handleFormOpen} />
-                        </div>
-                    </Container>
-                </div>}
+            <LoginRegPopup handleFormOpen={handleFormOpen} openLogin={openLogin} setAuthed={setAuthed} />
         </div >
     )
 };

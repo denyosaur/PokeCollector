@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-const useFields = (initialState) => {
-    const [formData, setFormData] = useState(initialState);
+const useFields = (state) => {
+    const [formData, setFormData] = useState(state);
 
     const handleChange = evt => {
         setFormData(formData => ({

@@ -11,12 +11,12 @@ takes in the following:
     data - data to be sent to request body or through params. defaults to empty
 */
 
-const request = async (endpoint, method = "GET", data = {}) => {
+const request = async (endpoint, token = "", method = "GET", data = {}) => {
     console.debug("API Call:", endpoint, data, method);
     try {
         const options = {
             url: `${BASE_URL}/${endpoint}`,
-            headers: { Authorization: this.token },
+            headers: { authorization: token },
             params: (method === "get") ? data : {},
             method: method,
             data: data,

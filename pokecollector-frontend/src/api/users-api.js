@@ -1,19 +1,13 @@
-import request from "./api-helper"
+import request from "./api-request-helper";
 
 class UsersApi {
-    constructor(token) {
-        this.token = token;
-    }
-
     /************************************CORRECT USER OR ADMIN ONLY************************************/
 
     /*method for logging in
     form = {username, password}
     */
     static async login(loginForm) {
-        const res = await request("auth/token", "POST", loginForm);
-
-        this.token = res.token;
+        const res = await request("auth/token", "", "POST", loginForm);
 
         return res;
     }
@@ -23,9 +17,7 @@ class UsersApi {
     form = {username, password, firstName, lastName, email}
     */
     static async register(registerForm) {
-        const res = await request("auth/register", "POST", registerForm);
-
-        this.token = res.token;
+        const res = await request("auth/register", "", "POST", registerForm);
 
         return res;
     }
@@ -34,8 +26,8 @@ class UsersApi {
     form = { username, firstName, lastName, email, isAdmin, currencyAmount }
     returns user object { username, firstName, lastName, email, isAdmin, currencyAmount }
     */
-    static async currUser(username) {
-        const res = await request(`user/${username}`);
+    static async currUser(username, token) {
+        const res = await request(`user/${username}`, token);
 
         return res;
     }
@@ -44,8 +36,9 @@ class UsersApi {
     updatedInfo should contain {password, firstName, lastName}
     returns {user:{ username, firstName, lastName, email, isAdmin, currencyAmount }}
     */
-    static async patchUserDetails(username, updatedInfo) {
-        const res = await request(`user/${username}`, "PATCH", updatedInfo);
+    static async patchUserDetails(username, updatedInfo, token) {
+
+        const res = await request(`user/${username}`, token, "PATCH", updatedInfo);
 
         return res;
     }
@@ -62,22 +55,20 @@ class UsersApi {
 
     /*******************ADMIN ONLY************************************/
 
-    /*method for deleting a user
-    updatedInfo should contain {password, firstName, lastName}
-    returns { users: [ {username, firstName, lastName, email }, ... ] }
+    /*method for getting a list of all users
+    returns {users: [{ username, firstName, lastName},...]}
     */
     static async getAllUsers() {
-        const res = await request(`user/admin/allusers`);
+        const res = await request("user/admin/allusers");
 
         return res;
     }
 
-    /*method for deleting a user
-    updatedInfo should contain {password, firstName, lastName}
-    returns { newAdmin:  {username, firstName, lastName, email }, token }
+    /*method for creating admin
+    returns object {users: [{ username, firstName, lastName},...]}
     */
-    static async getAllUsers() {
-        const res = await request("user/admin/createadmin", "POST", registerForm);
+    static async createAdmin(form) {
+        const res = await request("user/admin/createadmin", "POST", form);
 
         return res;
     }

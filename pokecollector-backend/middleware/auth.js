@@ -56,6 +56,7 @@ Middleware for checking if admin is logged in. If not, throw UnauthorizedError.
 function ensureCorrectUserOrAdmin(req, res, next) {
     try {
         const user = res.locals.user;
+
         if (!(user && (user.isAdmin || user.username === req.params.username))) {
             throw new UnauthorizedError();
         }

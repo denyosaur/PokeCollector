@@ -20,7 +20,7 @@ const router = express.Router();
 /*********CORRECT USER OR ADMIN ONLY*********/
 
 /* GET user/:username =>  { username, firstName, lastName, email, isAdmin, currencyAmount }
-Returns user info and cards owned - Correct User or Admin Only
+Returns user info - Correct User or Admin Only
 */
 router.get("/:username", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
@@ -84,13 +84,13 @@ router.delete("/:username", ensureCorrectUserOrAdmin, async function (req, res, 
 /* GET user/ {user} =>  { users: [ {username, firstName, lastName, email }, ... ] }
 Returns list of all users - admin only
 user findAll method from User to fetch list of all users
-return user object
+return user object {users: [{ username, firstName, lastName},...]}
 */
 router.get("/admin/allusers", ensureAdmin, async function (req, res, next) {
     try {
-        const user = await Users.findAll();
+        const users = await Users.findAll();
 
-        return res.json({ user });
+        return res.json({ users });
     } catch (error) {
         return next(error);
     };
@@ -101,7 +101,7 @@ router.get("/admin/allusers", ensureAdmin, async function (req, res, next) {
 create a new user. can set to admin - admin only
 check inputs against jsonschema to validate that inputs are correct. if not throw BadRequestError
 pass in req.body to User.register to create new account.
-return user and token
+return newAdmin and token { newAdmin, token }
 */
 router.post("/admin/createadmin", ensureAdmin, async function (req, res, next) {
     try {
