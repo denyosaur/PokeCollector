@@ -14,8 +14,8 @@ class CardsApi {
                         }}
     returns [{card},...] 
     */
-    static async getCards(data) {
-        const res = await request("cards/", "GET", data);
+    static async getCards(data = {}) {
+        const res = await request("cards/", "", "GET", data);
 
         return res;
     }
@@ -34,8 +34,8 @@ class CardsApi {
     /*method for getting info on a specific card by ID
     returns cards object { cards: [{ownedId, username, cardId, cardInfo},...] }
     */
-    static async getOwnedCards(username) {
-        const res = await request(`cards/user/${username}`);
+    static async getOwnedCards(username, token) {
+        const res = await request(`cards/user/${username}`, token);
 
         return res;
     }

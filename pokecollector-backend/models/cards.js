@@ -68,7 +68,7 @@ class Cards {
                 "legalities": card.legalities,
                 "images": card.images.large,
                 "tcgplayer": card.tcgplayer,
-                "prices": card.tcgplayer.prices.mid
+                "prices": card.cardmarket.prices.averageSellPrice
             };
             const uploadedCard = await this._create(newCard);
             return uploadedCard;

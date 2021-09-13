@@ -17,7 +17,7 @@ const request = async (endpoint, token = "", method = "GET", data = {}) => {
         const options = {
             url: `${BASE_URL}/${endpoint}`,
             headers: { authorization: token },
-            params: (method === "get") ? data : {},
+            params: (method === "GET") ? data : {},
             method: method,
             data: data,
         };

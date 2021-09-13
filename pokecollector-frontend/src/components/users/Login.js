@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import UsersApi from "../../api/users-api"
 import useFields from "../../hooks/useFields";
 
-import "../../css/login.css"
+import "../../css/login.css";
 
 const Login = ({ setAuthed, handleFormOpen }) => {
     const history = useHistory();
@@ -14,7 +14,7 @@ const Login = ({ setAuthed, handleFormOpen }) => {
         password: ""
     };
 
-    const [formData, setFormData] = useFields(INITIAL_STATE); //hook for field changes
+    const [formData, handleChange] = useFields(INITIAL_STATE); //hook for field changes
 
     const handleSubmit = async (evt) => {
         evt.preventDefault(); //stop page from reloading
@@ -35,13 +35,13 @@ const Login = ({ setAuthed, handleFormOpen }) => {
             <p className="Login-agreement">By continuing, you agree to our User Agreement and Privacy Policy.</p>
             <form onSubmit={handleSubmit} className="Login-form">
                 <label htmlFor="username"></label>
-                <input type="text" placeholder="Username" name="username" id="username" onChange={setFormData}></input>
+                <input type="text" placeholder="Username" name="username" id="username" onChange={handleChange}></input>
 
                 <label htmlFor="password"></label>
-                <input type="password" placeholder="Password" name="password" id="password" onChange={setFormData}></input>
+                <input type="password" placeholder="Password" name="password" id="password" onChange={handleChange}></input>
                 <button className="Login-button">Submit</button>
                 <div className="Login-switchform">
-                    <p>New to Pokecollector? <a className="Login-signup" onClick={handleFormOpen}>Sign Up</a></p>
+                    <p>New to Pokecollector? <span className="Login-signup" onClick={handleFormOpen}>Sign Up</span></p>
                 </div>
             </form>
         </div>

@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 const Homepage = () => {
     let username = localStorage.getItem("username") || false
     useEffect(() => {
-        username = localStorage.getItem("username")
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

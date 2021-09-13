@@ -1,0 +1,16 @@
+.Store-page {
+    display:flex;
+}
+
+.Store-page-search{
+    width:15%;
+
+}
+
+.Store-cards {
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-evenly;
+    width:85%;
+
+} 

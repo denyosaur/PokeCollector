@@ -1,8 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 
-import Button from 'react-bootstrap/Button';
-
 // import handleFormSubmit from "../../hooks/handleFormSubmit";
 
 import UsersApi from "../../api/users-api"
@@ -58,7 +56,7 @@ const Register = ({ setAuthed, handleFormOpen }) => {
 
                 <button className="Register-button">Register</button>
                 <div className="Register-switchform">
-                    <p>Already a Pokecollector? <a className="Register-login" onClick={handleFormOpen}>Login</a></p>
+                    <p>Already a Pokecollector? <span className="Register-login" onClick={handleFormOpen}>Login</span></p>
                 </div>
             </form>
         </div>

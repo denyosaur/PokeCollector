@@ -1,0 +1,98 @@
+.MiniCard {
+    margin:25px;
+    border-radius:10px;
+}
+
+.MiniCard-id {
+
+    width:150px;
+    z-index:2;
+}
+
+.MiniCard-container {
+    height:300px;
+    width:150px;
+    box-shadow:0 0 10px rgba(0,0,0,0.6);
+    background-color:rgb(241, 243, 248);
+    border-radius:5px;
+}
+
+.MiniCard-image{
+    height:206px;
+}
+
+.MiniCard-image img{
+    max-width:150px;
+    height:auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius:5px;
+    box-shadow:0 8px 6px -6px rgba(0,0,0,0.6);
+}
+
+.MiniCard-info {
+    display:flex;
+    flex-wrap: wrap;
+    margin:4px;
+}
+
+.MiniCard-info-col{
+    width:50%;
+}
+
+.MiniCard-info-price {
+    position:relative;
+    left:2px;
+    font-weight: bold;
+    font-size:15px;
+}
+
+.MiniCard-addtocart {
+    position:relative;
+    height:42px;
+    width:42px;
+    bottom:20px;
+    left:45px;
+    border-radius:50px;
+    background-color:white;
+    text-align:center;
+    box-shadow:0 0 10px rgba(0,0,0,0.5);
+    z-index: 3;
+}
+
+.MiniCard-addtocart i{
+    position:relative;
+    top:2px;
+    font-size:25px;
+    background-color:white;
+    z-index:3;
+}
+
+.MiniCard-info-header{
+    position:relative;
+    bottom:4px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.MiniCard-info-setname{
+    position:relative;
+    bottom:10px;
+    left:2px;
+    font-size:12px;
+}
+
+.MiniCard-info-rarity {
+    position:relative;
+    bottom:8px;
+    font-size:14px;
+}
+
+.MiniCard-info-setlogo img{
+    max-width:50px;
+    max-height:50px;
+    height:auto;
+    display:block;
+    margin: auto;
+}

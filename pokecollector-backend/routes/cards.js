@@ -9,9 +9,6 @@ const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 const Cards = require("../models/cards");
 const UsersCards = require("../models/users_cards");
 
-const { jsonValidate } = require("../helpers/jsonvalidator-helpers");
-const cardNewSchema = require("../schemas/cardNew.json");
-
 const router = new express.Router();
 
 /*********NO RESTRICTION*********/
@@ -28,6 +25,7 @@ available {query: {
 */
 router.get("/", async function (req, res, next) {
     const query = req.query;
+
     //convert minPrice and maxPrice into strings
     if (query.minPrice !== undefined) query.minPrice = +query.minPrice;
     if (query.maxPrice !== undefined) query.maxPrice = +query.maxPrice;
@@ -55,7 +53,6 @@ router.get("/:cardId", async function (req, res, next) {
         return next(error);
     }
 });
-
 
 /*********LOGGED IN*********/
 

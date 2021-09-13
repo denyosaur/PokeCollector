@@ -11,7 +11,6 @@ const UserProfile = () => {
 
     let authorization = localStorage.getItem("token") || false;
     let currUsername = localStorage.getItem("username") || false;
-    let profile;
 
     const INITIAL_VALUE = {
         firstName: "placeholder",
@@ -21,19 +20,22 @@ const UserProfile = () => {
     const [form, setForm] = useState(INITIAL_VALUE);
     const [notification, setNotification] = useState({});
 
-    useEffect(async () => {
-        profile = await UsersApi.currUser(currUsername, authorization);
-        const { firstName, lastName, email, currencyAmount, username } = profile.user;
-        setForm({
-            firstName: firstName,
-            lastName: lastName,
-            currencyAmount: currencyAmount,
-            email: email,
-            password: "",
-            secondPw: "",
-            currPassword: "",
-            username: username
-        });
+    useEffect(() => {
+        async function getProfile() {
+            const profileRes = await UsersApi.currUser(currUsername, authorization);
+            const { firstName, lastName, email, currencyAmount, username } = profileRes.user;
+            setForm({
+                firstName: firstName,
+                lastName: lastName,
+                currencyAmount: currencyAmount,
+                email: email,
+                password: "",
+                secondPw: "",
+                currPassword: "",
+                username: username
+            });
+        }
+        getProfile();
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -50,7 +52,7 @@ const UserProfile = () => {
             delete updatedForm.currencyAmount;
             delete updatedForm.secondPw;
 
-            const patch = await UsersApi.patchUserDetails(currUsername, form, authorization);
+            await UsersApi.patchUserDetails(currUsername, form, authorization);
 
             setNotification({
                 message: ["Successfully updated!"],

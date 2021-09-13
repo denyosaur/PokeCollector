@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const useFields = (state) => {
     const [formData, setFormData] = useState(state);
@@ -9,7 +9,7 @@ const useFields = (state) => {
             [evt.target.name]: evt.target.value
         }))
     }
-    return [formData, handleChange];
+    return [formData, handleChange, setFormData];
 };
 
 export default useFields;
