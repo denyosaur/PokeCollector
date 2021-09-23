@@ -3,12 +3,6 @@
     border-radius:10px;
 }
 
-.MiniCard-id {
-
-    width:150px;
-    z-index:2;
-}
-
 .MiniCard-container {
     height:300px;
     width:150px;
@@ -22,7 +16,7 @@
 }
 
 .MiniCard-image img{
-    max-width:150px;
+    width:150px;
     height:auto;
     display: block;
     margin-left: auto;
@@ -48,24 +42,23 @@
     font-size:15px;
 }
 
-.MiniCard-addtocart {
+.MiniCard-addtocart button {
     position:relative;
     height:42px;
     width:42px;
     bottom:20px;
     left:45px;
+    border:0;
     border-radius:50px;
-    background-color:white;
-    text-align:center;
+    background-color:#0275d8;
     box-shadow:0 0 10px rgba(0,0,0,0.5);
-    z-index: 3;
+    z-index: 4;
 }
 
 .MiniCard-addtocart i{
-    position:relative;
-    top:2px;
-    font-size:25px;
-    background-color:white;
+    font-size:20px;
+    color:white;
+    background-color:#0275d8;
     z-index:3;
 }
 

@@ -3,14 +3,20 @@ import React, { useEffect, useState } from "react";
 import CardsApi from "../../api/cards-api";
 
 import MiniCard from "../Cards/MiniCard";
-import StoreSearch from "./StoreSearch";
+import CardSearch from "../Cards/CardSearch";
+import CardDetails from "../Cards/CardDetails";
 
 import "../../css/store/store.css";
 
 const Store = () => {
     const getStoreCards = CardsApi.getCards;
-
+    const [cardId, setCardId] = useState(false);
     const [cards, setCards] = useState([]);
+
+    const moreInfo = (evt) => {
+        const id = evt.target.getAttribute("data");
+        setCardId(id);
+    }
 
     useEffect(() => {
         async function getAllCards() {
@@ -24,13 +30,19 @@ const Store = () => {
     return <div className="Store">
         <div className="Store-page">
             <div className="Store-page-search">
-                <StoreSearch setCards={setCards} getStoreCards={getStoreCards} />
+                <CardSearch setCards={setCards} getCards={getStoreCards} />
             </div>
             <div className="Store-cards">
                 {cards.map(card => {
-                    return (<MiniCard card={card} key={card.id} />)
+                    return (
+                        <div key={card.id} className="Store-card">
+                            <MiniCard card={card} moreInfo={moreInfo} />
+                        </div>)
                 })}
             </div>
+            {cardId && <div className="MyCards-details">
+                <CardDetails cardId={cardId} setCardId={setCardId} />
+            </div>}
         </div>
     </div>
 };

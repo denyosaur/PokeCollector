@@ -1,10 +1,10 @@
 .Store-page {
     display:flex;
+    flex-direction: row;
 }
 
 .Store-page-search{
     width:15%;
-
 }
 
 .Store-cards {
@@ -12,5 +12,68 @@
     flex-wrap:wrap;
     justify-content:space-evenly;
     width:85%;
-
+    height:800px;
+    overflow: scroll;
 } 
+
+
+@media (max-width: 767px) {
+    .Store-page {
+        display:flex;
+        flex-direction: column;
+    }
+
+    .Store-page-search{
+        width:100%;
+    }
+    
+    .Store-cards {
+        display:flex;
+        flex-wrap:wrap;
+        flex-direction: row;
+        justify-content:space-evenly;
+        width:100%;
+    }
+  }
+
+@media (min-width: 768px) {
+    .Store-page-search{
+        width:35%;
+    }
+    
+    .Store-cards {
+        display:flex;
+        flex-wrap:wrap;
+        flex-direction: row;
+        justify-content:space-evenly;
+        width:65%;
+    }
+  }
+
+@media (min-width: 992px) {
+    .Store-page-search{
+        width:25%;
+    }
+    
+    .Store-cards {
+        display:flex;
+        flex-wrap:wrap;
+        flex-direction: row;
+        justify-content:space-evenly;
+        width:75%;
+    }
+  }
+  
+@media (min-width: 1200px) {
+    .Store-page-search{
+        width:20%;
+    }
+    
+    .Store-cards {
+        display:flex;
+        flex-wrap:wrap;
+        flex-direction: row;
+        justify-content:space-evenly;
+        width:80%;
+    }
+  }

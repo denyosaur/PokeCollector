@@ -2,9 +2,12 @@ import React from "react";
 
 import useFields from "../../hooks/useFields";
 
-import "../../css/store/storesearch.css"
+import "../../css/store/cardsearch.css"
 
-const StoreSearch = ({ setCards, getStoreCards }) => {
+const CardSearch = ({ setCards, getCards }) => {
+    const token = localStorage.getItem("token") || false;
+    const username = localStorage.getItem("username") || false;
+
     const INITIAL_STATE = {
         name: "",
         minPrice: "",
@@ -20,7 +23,8 @@ const StoreSearch = ({ setCards, getStoreCards }) => {
         evt.preventDefault();
         setFormData(INITIAL_STATE);
         async function getUnfilteredCards() {
-            const searchRes = await getStoreCards({});
+            const searchRes = await getCards({}, token, username);
+
             setCards(searchRes.cards);
         }
         getUnfilteredCards();
@@ -37,7 +41,8 @@ const StoreSearch = ({ setCards, getStoreCards }) => {
                 }
             }
 
-            const searchRes = await getStoreCards(data);
+            const searchRes = await getCards(data, token, username);
+
             setCards(searchRes.cards);
 
         }
@@ -45,28 +50,28 @@ const StoreSearch = ({ setCards, getStoreCards }) => {
     }
 
     return (
-        <div className="StoreSearch">
-            <div className="StoreSearch-container">
-                <div className="StoreSearch-header">
+        <div className="CardSearch">
+            <div className="CardSearch-container">
+                <div className="CardSearch-header">
                     <span>Filters</span>
                 </div>
-                <form className="StoreSearch-form" >
-                    <div className="StoreSearch-input">
+                <form className="CardSearch-form" >
+                    <div className="CardSearch-input">
                         <label htmlFor="name">Card Name</label>
                         <input type="text" placeholder="Search a for a card.." name="name" id="name" onChange={handleChange} value={formData.name}></input>
                     </div>
 
-                    <div className="StoreSearch-input">
+                    <div className="CardSearch-input">
                         <label htmlFor="minPrice">Min. Price</label>
                         <input type="number" placeholder="Minimun Price" name="minPrice" id="minPrice" step="0.01" min="0" onChange={handleChange} value={formData.minPrice}></input>
                     </div>
 
-                    <div className="StoreSearch-input">
+                    <div className="CardSearch-input">
                         <label htmlFor="maxPrice">Max Price</label>
                         <input type="number" placeholder="Maximum Price" name="maxPrice" id="maxPrice" step="0.01" min="0" onChange={handleChange} value={formData.maxPrice}></input>
                     </div>
 
-                    <div className="StoreSearch-input">
+                    <div className="CardSearch-input">
                         <label htmlFor="rarity">Rarity</label>
                         <select name="rarity" id="rarity" onChange={handleChange} value={formData.rarity}>
                             <option value=""></option>
@@ -77,7 +82,7 @@ const StoreSearch = ({ setCards, getStoreCards }) => {
                         </select>
                     </div>
 
-                    <div className="StoreSearch-input">
+                    <div className="CardSearch-input">
                         <label htmlFor="types">Types</label>
                         <select name="types" id="types" onChange={handleChange} value={formData.types}>
                             <option value=""></option>
@@ -91,7 +96,7 @@ const StoreSearch = ({ setCards, getStoreCards }) => {
                         </select>
                     </div>
 
-                    <div className="StoreSearch-input">
+                    <div className="CardSearch-input">
                         <label htmlFor="setName">Set Name</label>
                         <select name="setName" id="setName" onChange={handleChange} value={formData.setNames}>
                             <option value=""></option>
@@ -102,9 +107,9 @@ const StoreSearch = ({ setCards, getStoreCards }) => {
                             <option value="Team Rocket">Team Rocket</option>
                         </select>
                     </div>
-                    <div className="StoreSearch-buttons">
-                        <button className="StoreSearch-apply" onClick={handleSearch}>Apply Filters</button>
-                        <button className="StoreSearch-reset" onClick={clearForm}>Clear Form</button>
+                    <div className="CardSearch-buttons">
+                        <button className="CardSearch-apply" onClick={handleSearch}>Apply Filters</button>
+                        <button className="CardSearch-reset" onClick={clearForm}>Clear Form</button>
                     </div>
 
                 </form>
@@ -112,4 +117,4 @@ const StoreSearch = ({ setCards, getStoreCards }) => {
         </div>)
 };
 
-export default StoreSearch;
+export default CardSearch;

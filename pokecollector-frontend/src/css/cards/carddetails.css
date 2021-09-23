@@ -1,0 +1,99 @@
+.CardDetails {
+
+}
+.CardDetails-formClose {
+    position:absolute;
+    right:3px;
+}
+.CardDetails {
+    position:absolute;
+    background-color: white;
+    border-radius: .3rem;
+    width: 50%;
+    height: 50%;
+    min-width: 700px;
+    min-height:500px;
+    max-width: 900px;
+    max-height: 600px;
+    top:10%;
+    left:28%;
+    box-shadow:0 0 20px rgba(0,0,0,0.4);
+    z-index: 10;
+    background-color:white;
+}
+
+.CardDetails-details {
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    padding:25px;
+    font-size: 1.8vw;
+}
+.CardDetails-images{
+    width:50%;
+}
+.CardDetails-col1 img{
+    height:400px;
+    width:auto;
+    border: solid;
+    border-width:1px;
+    border-radius:10px;
+    box-shadow:0 0 20px rgba(0,0,0,0.3);
+}
+
+.CardDetails-col2 {
+    display:flex;
+    flex-direction: column;
+    width:50%;
+    margin-top:5px;
+}
+
+.CardDetails-col2 li {
+    list-style-type: none;
+}
+
+.CardDetails-col2 li span {
+    float:right;
+}
+
+.CardDetails-col2 img {
+    height:100px;
+}
+.CardDetails-setimage {
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.CardDetails-cart {
+    margin-top: 10px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.CardDetails-cart button{
+    display: block;
+    border-radius:50px;
+    width:300px;
+    height:40px;
+    left:50%;
+    right:50%;
+    background-color:#0275d8;
+    color:white;
+    border: 0;
+}
+.CardDetails-cart button:hover{
+    background-color:#0088ff;
+}
+
+.CardDetails-background {
+    position:absolute;
+    background-color:#b1b1b1;
+    right:0%;
+    top:0%;
+    height:100%;
+    width:100%;
+    opacity:.65;
+    filter:grayscale(.95);
+    z-index: 8;
+}

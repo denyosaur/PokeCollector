@@ -15,7 +15,7 @@ class DeckApi {
     /*method for deck information and all cards associated
     returns deck object {deck: {id, username, deckName}, cards: [{id, name, images, setName, setLogo},...]}
     */
-    static async getDecks(username, deckId) {
+    static async getDeckInfo(username, deckId) {
         const res = await request(`decks/${username}/${deckId}`);
 
         return res;

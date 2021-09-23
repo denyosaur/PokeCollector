@@ -1,9 +1,11 @@
 import { BrowserRouter } from "react-router-dom";
-import { useState } from "react";
+import React, { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import NavbarComp from "./components/navigation/Navbar";
-import Routes from "./components/Routes"
+import Routes from "./components/Routes";
+
+import CartGlobal from "./context/CartGlobal";
 
 
 import './App.css';
@@ -11,16 +13,18 @@ import './App.css';
 function App() {
   const [authed, setAuthed] = useState(false);
 
-
   return (
     <div className="App">
+      <CartGlobal>
+        <BrowserRouter>
 
-      <BrowserRouter>
-        <NavbarComp authed={authed} setAuthed={setAuthed} />
-        <div className="App-container">
-          <Routes setAuthed={setAuthed} />
-        </div>
-      </BrowserRouter>
+          <NavbarComp authed={authed} setAuthed={setAuthed} />
+          <div className="App-container">
+            <Routes setAuthed={setAuthed} />
+          </div>
+
+        </BrowserRouter>
+      </CartGlobal>
 
     </div>
   )
