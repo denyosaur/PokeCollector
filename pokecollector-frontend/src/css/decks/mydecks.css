@@ -1,0 +1,10 @@
+.MyDecks {
+    display:flex;
+    flex-direction: row;
+}
+.MyDecks-decklist {
+    display:flex;
+    flex-direction: row;
+    width:100%;
+    justify-content: space-evenly;
+}

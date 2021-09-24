@@ -71,6 +71,37 @@ router.get("/user/:username", ensureLoggedIn, async function (req, res, next) {
     };
 });
 
+/* GET cards/:username/search =>  { cards: [{ownedId, username, cardId, cardInfo},...] }
+Returns list of cards that user owns according to search query- Correct User or Admin Only
+
+available {query: {
+    name, 
+    minPrice, 
+    maxPrice, 
+    rarity, 
+    types, 
+    setName
+}}
+
+*/
+router.get("/user/:username/search", ensureLoggedIn, async function (req, res, next) {
+    const query = req.query;
+
+    //convert minPrice and maxPrice into strings
+    if (query.minPrice !== undefined) query.minPrice = +query.minPrice;
+    if (query.maxPrice !== undefined) query.maxPrice = +query.maxPrice;
+
+    try {
+        const { username } = req.params;
+
+        const cards = await UsersCards.searchUserCards(query, username);
+
+        return res.json({ cards });
+    } catch (error) {
+        return next(error);
+    };
+});
+
 /*********ADMIN ONLY*********/
 
 /* POST /pullCards/:setId  =>  { deleted: handle }

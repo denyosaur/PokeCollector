@@ -7,10 +7,12 @@ const CardsInDecks = require("./cards_in_decks")
 /* Functions for Deck Building */
 
 class Deck {
-    constructor(id, username, deckName) {
+    constructor(id, username, deckName, deckImage, deckCards = {}) {
         this.deckId = id;
         this.username = username;
         this.deckName = deckName;
+        this.deckImage = deckImage;
+        this.deckCards = deckCards
     };
 
     /* Create New Card Deck
@@ -36,15 +38,15 @@ class Deck {
     then makes a query to pull all the decks that the user owns
     returns array [{deckName1}, {deckName2}, ...]
     */
-    async getAllDecks(uname) {
-        const result = await db.query(`SELECT id, username, deck_name AS "deckName"
+    static async getAllDecks(uname) {
+        const result = await db.query(`SELECT id, username, deck_name AS "deckName", deck_image AS "deckImage"
                                        FROM decks
                                        WHERE username = $1
                                        ORDER BY deck_name`, [uname]);
 
         const decks = result.rows.map(deck => {
-            const { id, username, deckName } = deck;
-            return new Deck(id, username, deckName);
+            const { id, username, deckName, deckImage } = deck;
+            return new Deck(id, username, deckName, deckImage);
         })
 
         return decks;

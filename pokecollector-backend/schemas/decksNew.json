@@ -16,6 +16,11 @@
             "type": "string",
             "minLength": 3,
             "maxLength": 30
+        },
+        "deckImage": {
+            "description": "Image URL of new deck",
+            "type": "string",
+            "minLength": 3
         }
     },
     "additionalProperties": false,

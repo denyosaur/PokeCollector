@@ -9,7 +9,6 @@ import NotificationCard from "../navigation/NotificationCard";
 import "../../css/cart/mycart.css";
 
 const MyCart = ({ setCartOpen, authed }) => {
-    let authorization = localStorage.getItem("token") || false;
     let currUsername = localStorage.getItem("username") || false;
 
     const INITIAL_VALUE = { price: 0, quantity: 0 }
@@ -33,19 +32,26 @@ const MyCart = ({ setCartOpen, authed }) => {
         setTotals(newTotals);
     }, [cart])
 
-    const closeCart = () => { setCartOpen(false); };
+    const closeCart = () => { setCartOpen(false); }; //handler for closing cart window
 
+    /*handler for checking out
+    API request to:
+        1. remove cost of cards
+        2. add cards to user's inventory
+    then remove "cart" from localStorage and restore the cart totals
+    */
     const checkout = () => {
         let cost = { "funds": totals.price };
         async function makePurchase() {
-            await removeFunds(currUsername, cost, authorization);
-            await purchase(currUsername, cart, authorization);
+            await removeFunds(currUsername, cost, authed);
+            await purchase(currUsername, cart, authed);
             localStorage.removeItem("cart");
-            setTotals(INITIAL_VALUE)
+            setTotals(INITIAL_VALUE);
         }
         makePurchase();
     };
 
+    //array of cards in cart
     const cartItems = Object.keys(cart).map(id => { return <CartItem id={id} key={id} /> });
 
     return (

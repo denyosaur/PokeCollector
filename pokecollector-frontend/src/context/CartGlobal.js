@@ -14,16 +14,10 @@ const CartGlobal = ({ children }) => {
         dispatcher({ type: REMOVE_CARD, card: card })
     };
 
-    const localStorageCartUpdate = () => {
-
-    };
-    //add all useEffect here for exporting
-
     const value = {
         cart: cartState.cart,
         addToCart: addToCart,
-        removeFromCart: removeFromCart,
-        localStorageCartUpdate: localStorageCartUpdate
+        removeFromCart: removeFromCart
     };
 
     return (

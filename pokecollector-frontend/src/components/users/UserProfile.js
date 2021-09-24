@@ -104,7 +104,7 @@ const UserProfile = () => {
                         <label htmlFor="firstName">First Name</label>
                     </div>
                     <div className="Profile-col-75">
-                        <input type="text" placeholder={form.firstName} name="firstName" id="firstName" onChange={handleChange} minlength="1" maxlength="30"></input>
+                        <input type="text" placeholder={form.firstName} name="firstName" id="firstName" onChange={handleChange} minLength="1" maxLength="30"></input>
                     </div>
 
                 </div>
@@ -114,7 +114,7 @@ const UserProfile = () => {
                         <label htmlFor="lastName">Last Name</label>
                     </div>
                     <div className="Profile-col-75">
-                        <input type="text" placeholder={form.lastName} name="lastName" id="lastName" onChange={handleChange} minlength="1" maxlength="30" ></input>
+                        <input type="text" placeholder={form.lastName} name="lastName" id="lastName" onChange={handleChange} minLength="1" maxLength="30" ></input>
                     </div>
                 </div>
 
@@ -123,7 +123,7 @@ const UserProfile = () => {
                         <label htmlFor="lastName">Email</label>
                     </div>
                     <div className="Profile-col-75">
-                        <input type="email" placeholder={form.email} name="email" id="email" onChange={handleChange} minlength="6" maxlength="60"></input>
+                        <input type="email" placeholder={form.email} name="email" id="email" onChange={handleChange} minLength="6" maxLength="60"></input>
                     </div>
                 </div>
 
@@ -132,7 +132,7 @@ const UserProfile = () => {
                         <label htmlFor="newPassword">New Password</label>
                     </div>
                     <div className="Profile-col-75">
-                        <input type="password" placeholder="Enter a new password" name="password" id="password" onChange={handleChange} minlength="5" maxlength="30"></input>
+                        <input type="password" placeholder="Enter a new password" name="password" id="password" onChange={handleChange} minLength="5" maxLength="30"></input>
                     </div>
                 </div>
 
@@ -141,7 +141,7 @@ const UserProfile = () => {
                         <label htmlFor="secondPw">Re-enter New Password</label>
                     </div>
                     <div className="Profile-col-75">
-                        <input type="password" placeholder="Re-enter password from above" name="secondPw" id="secondPw" onChange={handleChange} minlength="5" maxlength="30"></input>
+                        <input type="password" placeholder="Re-enter password from above" name="secondPw" id="secondPw" onChange={handleChange} minLength="5" maxLength="30"></input>
                         {!newPasswordCheck && <div className="Profile-newpwwarning">Password must match above.</div>}
                     </div>
                 </div>
@@ -151,7 +151,7 @@ const UserProfile = () => {
                         <label htmlFor="currPassword">Current Password</label>
                     </div>
                     <div className="Profile-col-75">
-                        <input type="password" placeholder="Enter current password" name="currPassword" id="currPassword" onChange={handleChange} minlength="5" maxlength="30"></input>
+                        <input type="password" placeholder="Enter current password" name="currPassword" id="currPassword" onChange={handleChange} minLength="5" maxLength="30"></input>
                     </div>
                 </div>
 

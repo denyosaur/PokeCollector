@@ -98,8 +98,13 @@ VALUES ('base1-46',
           "text": "Discard 1 Fire Energy card attached to Charmander in order to use this attack."
         }'
       ],
-        ARRAY ['{"type": "Water","value": "×2"}'],
-        ARRAY ['null'],
+        ARRAY ['{"type": "Water","value": "x2"}'],
+        ARRAY [
+        '{
+          "type": "Psychic",
+          "value": "-30"
+        }'
+      ],
         ARRAY ['Colorless'],
         1,
         'Base',
@@ -141,7 +146,11 @@ VALUES ('base1-46',
           "type": "Fire",
           "value": "×2"
             }'],
-          ARRAY ['RESISTS'],
+          ARRAY [
+        '{
+          "type": "Psychic",
+          "value": "-30"
+        }'],
           ARRAY ['Colorless'],
           1,
           'Base',
@@ -151,7 +160,7 @@ VALUES ('base1-46',
           'Common',
           ARRAY [1],
           '{"unlimited": "Legal"}',
-          'https://images.pokemontcg.io/base1/46_hires.png',
+          'https://images.pokemontcg.io/base1/44_hires.png',
           '{
             "url": "https://prices.pokemontcg.io/tcgplayer/base1-44",
             "updatedAt": "2021/08/22",
@@ -164,7 +173,7 @@ VALUES ('base1-46',
                 "directLow": 1.29
             }}}',
             2.5),
-            ('base1-63',
+        ('base1-63',
         'Squirtle',
         'Pokémon',
         ARRAY ['Basic'],
@@ -196,7 +205,10 @@ VALUES ('base1-46',
           "value": "×2"
         }'
       ],
-      ARRAY ['null'],
+      ARRAY ['{
+          "type": "Psychic",
+          "value": "-30"
+        }'],
         ARRAY ['Colorless'],
         1,
         'Base',
@@ -256,7 +268,10 @@ VALUES ('base1-46',
           "value": "×2"
         }'
       ],
-      ARRAY ['null'],
+      ARRAY ['{
+          "type": "Psychic",
+          "value": "-30"
+        }'],
         ARRAY ['Colorless'],
         1,
         'Base',
@@ -363,11 +378,11 @@ VALUES ('testuser','base1-46'),
        ('testadmin','base2-10'),
        ('testadmin','base1-63');
 
-INSERT INTO decks (username, deck_name)
-VALUES ('testuser','card deck #1'),
-       ('testuser','card deck #2'),
-       ('testadmin','admin deck #3'),
-       ('testadmin','admin deck #4');
+INSERT INTO decks (username, deck_name, deck_image)
+VALUES ('testuser','card deck #1', 'https://images.pokemontcg.io/base1/63_hires.png'),
+       ('testuser','card deck #2', 'https://images.pokemontcg.io/base2/10_hires.png'),
+       ('testadmin','admin deck #3', 'https://images.pokemontcg.io/base1/63_hires.png'),
+       ('testadmin','admin deck #4', 'https://images.pokemontcg.io/base1/68_hires.png');
 
 INSERT INTO cards_in_decks (deck_id, users_cards_id)
 VALUES (1,1),

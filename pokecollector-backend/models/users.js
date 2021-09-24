@@ -181,10 +181,12 @@ class Users {
     async removeAmount(amount) {
         if (this.currencyAmount >= amount) {
             const newAmount = this.currencyAmount - amount;
+            console.log(typeof (newAmount))
             const updated = await db.query(`UPDATE users
                                             SET currency_amount = $1
                                             WHERE username = $2
                                             RETURNING username, currency_amount AS "currencyAmount"`, [newAmount, this.username]);
+
             const updatedAmount = updated.rows[0];
             return updatedAmount;
         } else {

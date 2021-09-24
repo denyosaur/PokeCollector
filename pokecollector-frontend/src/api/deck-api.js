@@ -6,8 +6,8 @@ class DeckApi {
     /*method for getting all decks a user created
     returns deck object {decks:[{id, username, deckName}, ...]}
     */
-    static async getDecks(username) {
-        const res = await request(`decks/${username}`);
+    static async getDecks(username, token) {
+        const res = await request(`decks/${username}`, token);
 
         return res;
     }
@@ -49,7 +49,7 @@ class DeckApi {
     /* method for deleting a deck
     returns deck object {deleted: {id, username, deckName}}
     */
-    static async updateCardsInDeck(username, deckId) {
+    static async deleteDeck(username, deckId) {
         const res = await request(`decks/${username}/${deckId}`, "DELETE");
 
         return res;

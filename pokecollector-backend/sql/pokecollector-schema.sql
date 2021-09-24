@@ -4,7 +4,7 @@ CREATE TABLE users (
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
     email TEXT UNIQUE CHECK (position('@' IN email) > 1),
-    currency_amount INTEGER NOT NULL,
+    currency_amount NUMERIC NOT NULL,
     is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
@@ -62,7 +62,8 @@ CREATE TABLE users_cards (
 CREATE TABLE decks (
     id SERIAL PRIMARY KEY,
     username TEXT NOT NULL REFERENCES users(username) ON DELETE CASCADE,
-    deck_name TEXT NOT NULL
+    deck_name TEXT NOT NULL,
+    deck_image TEXT
 );
 
 CREATE TABLE cards_in_decks (

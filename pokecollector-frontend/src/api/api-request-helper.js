@@ -21,7 +21,6 @@ const request = async (endpoint, token = "", method = "GET", data = {}) => {
             method: method,
             data: data,
         };
-
         const res = await axios(options);
 
         return res.data;
