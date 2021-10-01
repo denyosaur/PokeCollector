@@ -22,11 +22,10 @@
     text-align: center;
 }
 
-
 .NewDeckBox-image img {
     height:250px;
     width:300px;
     border-radius:10px;
     object-fit: none;
-    object-position: 55% 18%;
+    object-position: 47% 44%;
 }

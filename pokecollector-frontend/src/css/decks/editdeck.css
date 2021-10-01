@@ -1,0 +1,18 @@
+.EditDeck {
+    display:flex;
+    flex-direction: row;
+
+
+}
+
+.EditDeck-MyCards {
+    width:80%;
+    min-height:100%;
+
+}
+
+.EditDeck-deck {
+    width:20%;
+    min-width:300px;
+    height:100%;
+}

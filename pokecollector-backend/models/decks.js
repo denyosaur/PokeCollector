@@ -75,7 +75,7 @@ class Deck {
     make query request to change the currentDeckName to updatedDeckName
     return newDeckName 
     */
-    static async updateDeckName(newName) {
+    async updateName(newName) {
         const result = await db.query(`UPDATE decks
                                        SET deck_name = $1
                                        WHERE id = $2
@@ -91,7 +91,7 @@ class Deck {
     if it doesn't exist, throw NotFoundError
     returns object: {id, username, deckName}
     */
-    static async delete() {
+    async delete() {
         const result = await db.query(`DELETE 
                                        FROM decks
                                        WHERE id = $1
@@ -105,7 +105,7 @@ class Deck {
     call method getAllCards from CardsInDecks with deck ID passed in
     returns object: [{id, name, images, setName, setLogo},...]
     */
-    static async getCards() {
+    async getCards() {
         const cards = await CardsInDecks.getAllCards(this.deckId);
         return cards;
     };
@@ -119,8 +119,8 @@ class Deck {
         added:{deckId, cardId}
     }}
     */
-    static async updateCards(removeArr, addArr) {
-        const updated = await CardsInDecks.updateDeckCards(this.deckId, removeArr, addArr);
+    async updateCards(updateArr) {
+        const updated = await CardsInDecks.updateDeckCards(this.deckId, updateArr);
         return updated;
     };
 };

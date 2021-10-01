@@ -3,12 +3,22 @@ import React, { useEffect, useState } from "react";
 import DecksApi from "../../api/deck-api";
 
 import DeckBox from "./DeckBox";
-import NewDeckBox from "./NewDeckBox";
+import EditDeck from "./EditDeck";
 
 import "../../css/decks/mydecks.css";
 
 const MyDecks = () => {
-    const [decks, setDecks] = useState([])
+    const [decks, setDecks] = useState([]);
+    const [editDeck, setEditDeck] = useState(false);
+    const newDeck = {
+        deckId: "newDeck",
+        deckName: "Create New Deck",
+        deckImage: "https://i.imgur.com/zyEsx2t.png"
+    }
+
+    const editDeckHandler = (deckId) => {
+        setEditDeck(deckId);
+    };
 
     useEffect(() => {
         let username = localStorage.getItem("username") || false;
@@ -19,24 +29,27 @@ const MyDecks = () => {
 
             setDecks(deckRes.decks);
         }
-        getDecks();
 
+        getDecks();
     }, []);
 
     return (
         <div className="MyDecks">
-            <div className="MyDecks-decklist">
+            {!editDeck ? (<div className="MyDecks-decklist">
                 <div className="MyDecks-newdeck">
-                    <NewDeckBox />
+                    <DeckBox deck={newDeck} editDeckHandler={editDeckHandler} />
                 </div>
                 {decks.map(deck => {
                     return (
                         <div className="MyDecks-deck" key={deck.deckId}>
-                            <DeckBox deck={deck} />
+                            <DeckBox deck={deck} editDeckHandler={editDeckHandler} />
                         </div>
                     )
                 })}
-            </div>
+            </div>)
+                : (<div className="MyDecks-editdeck">
+                    <EditDeck deckId={editDeck} setEditDeck={setEditDeck} />
+                </div>)}
         </div>
     )
 };

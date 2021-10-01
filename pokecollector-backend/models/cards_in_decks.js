@@ -6,8 +6,9 @@ const { NotFoundError } = require("../expressErrors");
 /* Functions for Cards in Decks */
 
 class CardsInDecks {
-    constructor(id, name, images, setName, setLogo) {
+    constructor(id, ownedId, name, images, setName, setLogo) {
         this.id = id;
+        this.ownedId = ownedId;
         this.name = name;
         this.images = images;
         this.setName = setName;
@@ -18,7 +19,8 @@ class CardsInDecks {
     return addCard [{id, name, images, setName, setLogo},...]
     */
     static async getAllCards(deckId) {
-        const cardResults = await db.query(`SELECT c.id, 
+        const cardResults = await db.query(`SELECT u.users_cards_id AS "ownedId",
+                                                   c.id, 
                                                    c.name, 
                                                    c.images, 
                                                    c.set_name AS "setName", 
@@ -30,14 +32,9 @@ class CardsInDecks {
                                                 ON u.users_cards_id = users_cards.id
                                             WHERE u.deck_id = $1`, [deckId]);
         const cards = cardResults.rows.map(card => {
-            const { id, name, images, setName, setLogo } = card;
-            return new CardsInDecks(id, name, images, setName, setLogo);
+            const { id, ownedId, name, images, setName, setLogo } = card;
+            return new CardsInDecks(id, ownedId, name, images, setName, setLogo);
         });
-
-        // SELECT s_name, score, status, address_city, email_id, accomplishments
-        // FROM student s
-        // INNER JOIN marks m ON s.s_id = m.s_id
-        // INNER JOIN details d ON d.school_id = m.school_id;
 
         if (!cards) throw new NotFoundError(`No cards in deck with ID: ${deckId}`);
 
@@ -81,25 +78,51 @@ class CardsInDecks {
                                        FROM cards_in_decks
                                        WHERE ${sqlString}
                                        RETURNING deck_id AS "deckId", users_cards_id AS "usersCardId"`, [...removeArr, deckId]);
-        console.log(remove.rows[0])
         const removedCards = remove.rows[0];
 
         return removedCards;
     };
 
-    /*Update and remove cards from deck - to be used in Decks model
-    call this._removeCards and this._addCards from this model. 
-    This method provides functionality for both methods
-    
-    return removed cards {
-        removed:[{deckId, cardId},...], 
-        added:[{deckId, cardId},...]
-    }
+    /*Delete all cards from deck
+    delete cards from cards_in_deck table by deck ID
+    this is used to delete cards and in update cards function
+    return {deleted:deckId}
     */
-    static async updateDeckCards(deckId, removeArr, addArr) {
-        const removed = await this._removeCards(deckId, removeArr);
-        const added = await this._addCards(deckId, addArr);
-        return { removed, added };
+    static async deleteDeck(deckId) {
+        await db.query(`DELETE
+                        FROM cards_in_decks
+                        WHERE deck_id = $1`, [deckId]);
+
+        return { deleted: deckId };
+    };
+
+    /*Delete current cards and add new cards to deck - to be used in Decks model
+    call this.deleteDeck and create SQL query to create values parameters. 
+
+    return { updatedDeck: updateArr, status: "success" }
+    */
+    static async updateDeckCards(deckId, updateArr) {
+        try {
+            await this.deleteDeck(deckId);
+            let arrLength = updateArr.length;
+            let valuesSqlArr = [];
+
+            while (arrLength > 0) {
+                const value = `($1, $${arrLength + 1})`
+                valuesSqlArr.push(value);
+
+                arrLength--;
+            };
+
+            const res = await db.query(`INSERT INTO cards_in_decks
+                        (deck_id, users_cards_id)
+                        VALUES ${valuesSqlArr.join(', ')}
+                        RETURNING id`, [deckId, ...updateArr]);
+
+            return { updatedDeck: updateArr, status: "success" };
+        } catch (error) {
+            return error;
+        }
     };
 };
 

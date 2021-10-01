@@ -1,18 +1,16 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import "../../css/decks/deckbox.css";
 
-const DeckBox = ({ deck }) => {
+const DeckBox = ({ deck, editDeckHandler }) => {
     const { deckId, deckName, deckImage } = deck;
 
-    const openDeck = (evt) => {
-        console.log("open deck")
-    };
-
     return (
-        <div className="DeckBox" data={deckId} onClick={openDeck}>
+        <div className="DeckBox" data={deckId} onClick={() => editDeckHandler(deckId)}>
             <div className="DeckBox-image">
-                <img src={deckImage} alt={`${deckName} card`} data={deckId} />
+                {(deckId === "newDeck")
+                    ? <img src={deckImage} alt={`${deckName} card`} data={deckId} className="DeckBox-newbackgroundimage" />
+                    : <img src={deckImage} alt={`${deckName} card`} data={deckId} className="DeckBox-backgroundimage" />}
             </div>
             <div className="DeckBox-name">
                 <div>{deckName}</div>

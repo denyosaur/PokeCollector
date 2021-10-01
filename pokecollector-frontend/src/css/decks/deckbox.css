@@ -22,7 +22,7 @@
     text-align: center;
 }
 
-.DeckBox-image img {
+.DeckBox-backgroundimage {
     height:250px;
     width:300px;
     border-radius:10px;
@@ -30,3 +30,10 @@
     object-position: 55% 18%;
 }
 
+.DeckBox-newbackgroundimage {
+    height:250px;
+    width:300px;
+    border-radius:10px;
+    object-fit: none;
+    object-position: 47% 44%;
+}

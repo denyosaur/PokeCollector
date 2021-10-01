@@ -71,10 +71,11 @@ router.patch("/:username/:deckId", ensureCorrectUserOrAdmin, async function (req
     try {
         jsonValidate(req.body, decksNameUpdateSchema); //json validator helper function
 
-        const { deckId, newName } = req.body;
+        const { newName } = req.body;
+        const { deckId } = req.params;
 
         const deck = await Decks.getDeck(deckId);
-        const newDeckName = await deck.updateDeckName(newName);
+        const newDeckName = await deck.updateName(newName);
 
         return res.json({ newDeckName });
     } catch (error) {
@@ -89,13 +90,13 @@ req.body = {
     add:[id1,...]
 }
 */
-router.post("/:username/:deckId", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.patch("/:username/:deckId/update", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
-        const { remove, add } = req.body;
+        const { updatedDeck } = req.body;
         const { deckId } = req.params;
 
         const deck = await Decks.getDeck(deckId);
-        const updated = await deck.updateCards(remove, add);
+        const updated = await deck.updateCards(updatedDeck);
 
         return res.json(updated);
     } catch (error) {
