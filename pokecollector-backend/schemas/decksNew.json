@@ -5,27 +5,20 @@
     "title": "New Deck",
     "description": "A new deck created by user",
     "properties": {
-        "newName": {
+        "deckName": {
             "description": "Name of new deck",
             "type": "string",
             "minLength": 1,
             "maxLength": 20
         },
-        "username": {
-            "description": "Username of new deck owner",
-            "type": "string",
-            "minLength": 3,
-            "maxLength": 30
-        },
         "deckImage": {
             "description": "Image URL of new deck",
-            "type": "string",
-            "minLength": 3
+            "type": "string"
         }
     },
     "additionalProperties": false,
     "required": [
         "deckName",
-        "username"
+        "deckImage"
     ]
 }

@@ -1,16 +1,18 @@
 .MyDecks {
     display:flex;
     flex-direction: row;
-    height:750px;
-
+    flex-basis: 33.33%;
+    width:100%;
 }
 .MyDecks-decklist {
     display:flex;
     flex-direction: row;
+    flex-wrap: wrap;
     width:100%;
     justify-content: space-evenly;
 }
-.MyDecks-editdeck{
-    height:100%;
 
+.MyDecks-editdeck {
+    width:100%;
+    height:100%;
 }

@@ -10,15 +10,20 @@
             "type": "integer",
             "minimum": 0
         },
-        "newName": {
-            "description": "Username of new deck owner",
+        "deckName": {
+            "description": "Name of new deck",
             "type": "string",
             "minLength": 3,
             "maxLength": 20
+        },
+        "deckImage": {
+            "description": "Image of new deck",
+            "type": "string"
         }
     },
     "additionalProperties": false,
     "required": [
-        "newName"
+        "deckName",
+        "deckImage"
     ]
 }

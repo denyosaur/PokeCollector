@@ -54,7 +54,10 @@ router.post("/:username", ensureCorrectUserOrAdmin, async function (req, res, ne
     try {
         jsonValidate(req.body, decksNewSchema); //json validator helper function
 
-        const deck = await Decks.createDeck(req.body);
+        const { deckName, deckImage } = req.body;
+        const { username } = req.params;
+
+        const deck = await Decks.createDeck(username, deckName, deckImage);
 
         return res.json({ deck });
     } catch (error) {
@@ -71,11 +74,11 @@ router.patch("/:username/:deckId", ensureCorrectUserOrAdmin, async function (req
     try {
         jsonValidate(req.body, decksNameUpdateSchema); //json validator helper function
 
-        const { newName } = req.body;
+        const { deckName, deckImage } = req.body;
         const { deckId } = req.params;
 
         const deck = await Decks.getDeck(deckId);
-        const newDeckName = await deck.updateName(newName);
+        const newDeckName = await deck.updateInfo(deckName, deckImage);
 
         return res.json({ newDeckName });
     } catch (error) {

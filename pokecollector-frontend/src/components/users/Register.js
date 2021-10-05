@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 import UsersApi from "../../api/users-api"
 import useFields from "../../hooks/useFields";
 
-import "../../css/register.css"
+import "../../css/register.css";
 
 const Register = ({ setAuthed, handleFormOpen }) => {
     const history = useHistory();

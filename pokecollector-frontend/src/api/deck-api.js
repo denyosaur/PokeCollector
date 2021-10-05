@@ -39,7 +39,7 @@ class DeckApi {
     /*method for updating deck name
     returns deck object {newDeckName: {id, username, deckName}}
     */
-    static async updateDeckName(username, token, deckId, data) {
+    static async updateDeckInfo(username, token, deckId, data) {
         if (token) {
             const res = await request(`decks/${username}/${deckId}`, token, "PATCH", data);
 
@@ -65,8 +65,8 @@ class DeckApi {
     /* method for deleting a deck
     returns deck object {deleted: {id, username, deckName}}
     */
-    static async deleteDeck(username, deckId) {
-        const res = await request(`decks/${username}/${deckId}`, "DELETE");
+    static async deleteDeck(username, token, deckId) {
+        const res = await request(`decks/${username}/${deckId}`, token, "DELETE");
 
         return res;
     }

@@ -20,17 +20,16 @@ class Deck {
     make query to INSERT a new entry with user ID and deck name
     returns object: {id, username, deckName}
     */
-    static async createDeck(newDeck) {
-        const { username, deckName } = newDeck;
+    static async createDeck(username, deckName, image = "https://i.imgur.com/QykX2aC.jpg") {
 
         const deckResult = await db.query(`INSERT INTO decks
-                                           (username, deck_name)
-                                           VALUES ($1, $2)
-                                           RETURNING id, username AS "newUsername", deck_name AS "newDeckName"`, [username, deckName]);
+                                           (username, deck_name, deck_image)
+                                           VALUES ($1, $2, $3)
+                                           RETURNING id, username AS "newUsername", deck_name AS "newDeckName", deck_image AS "newDeckImage"`, [username, deckName, image]);
 
-        const { id, newUsername, newDeckName } = deckResult.rows[0];
+        const { id, newUsername, newDeckName, newDeckImage } = deckResult.rows[0];
 
-        return new Deck(id, newUsername, newDeckName);
+        return new Deck(id, newUsername, newDeckName, newDeckImage);
     };
 
     /* Get All Deck that the User Owns
@@ -58,16 +57,20 @@ class Deck {
     returns object {id, username, deckName}
     */
     static async getDeck(deckId) {
-        const result = await db.query(`SELECT id, username, deck_name AS "deckName"
+        const result = await db.query(`SELECT id, username, deck_name AS "deckName", deck_image AS "deckImage"
                                        FROM decks
                                        WHERE id = $1`, [deckId]);
 
         if (!result.rows[0]) throw new NotFoundError(`No Deck with ID of ${deckId}`);
 
-        const { id, username, deckName } = result.rows[0];
+        const { id, username, deckName, deckImage } = result.rows[0];
 
-        return new Deck(id, username, deckName);
+        return new Deck(id, username, deckName, deckImage);
     };
+
+    // SELECT id, username, deck_name AS "deckName", deck_image AS "deckImage"
+    // FROM decks
+    // WHERE id = $1
 
     /* Update Card Deck Name
     accepts username and an object named data {currentDeckName, updatedDeckName}
@@ -75,15 +78,15 @@ class Deck {
     make query request to change the currentDeckName to updatedDeckName
     return newDeckName 
     */
-    async updateName(newName) {
+    async updateInfo(newDeckName, newDeckImage) {
         const result = await db.query(`UPDATE decks
-                                       SET deck_name = $1
-                                       WHERE id = $2
-                                       RETURNING id, username, deck_name AS "deckName"`, [newName, this.deckId]);
+                                       SET deck_name = $1, deck_image = $2
+                                       WHERE id = $3
+                                       RETURNING id, username, deck_name AS "deckName", deck_image AS "deckImage"`, [newDeckName, newDeckImage, this.deckId]);
 
-        const { id, username, deckName } = result.rows[0];
+        const { id, username, deckName, deckImage } = result.rows[0];
 
-        return new Deck(id, username, deckName);
+        return new Deck(id, username, deckName, deckImage);
     };
 
     /* Delete Card Deck

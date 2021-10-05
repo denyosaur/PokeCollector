@@ -12,7 +12,7 @@ const NotificationCard = ({ notification, setNotification }) => {
 
     const closeNotification = (evt) => {
         evt.preventDefault();
-        setNotification({});
+        setNotification(false);
     }
 
     return <div className="Notification" style={{ backgroundColor: color[status] }}>
@@ -20,7 +20,7 @@ const NotificationCard = ({ notification, setNotification }) => {
             <i className="bi bi-x-lg Error-formClose" onClick={closeNotification}></i>
         </div>
         <div className="Notification-message">
-            <p>{message[0]}</p>
+            <p>{message.message}</p>
         </div>
     </div>
 };

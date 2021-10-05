@@ -382,7 +382,7 @@ INSERT INTO decks (username, deck_name, deck_image)
 VALUES ('testuser','card deck #1', 'https://images.pokemontcg.io/base1/63_hires.png'),
        ('testuser','card deck #2', 'https://images.pokemontcg.io/base2/10_hires.png'),
        ('testadmin','admin deck #3', 'https://images.pokemontcg.io/base1/63_hires.png'),
-       ('testadmin','admin deck #4', 'https://images.pokemontcg.io/base1/68_hires.png');
+       ('testadmin','admin deck #4', 'https://images.pokemontcg.io/base1/58_hires.png');
 
 INSERT INTO cards_in_decks (deck_id, users_cards_id)
 VALUES (1,1),

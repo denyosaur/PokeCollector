@@ -18,7 +18,7 @@ const UserProfile = () => {
     };
 
     const [form, setForm] = useState(INITIAL_VALUE);
-    const [notification, setNotification] = useState({});
+    const [notification, setNotification] = useState(false);
 
     useEffect(() => {
         async function getProfile() {
@@ -78,7 +78,7 @@ const UserProfile = () => {
         <div className="Profile">
             <h3 className="Profile-header">User Profile Page</h3>
 
-            {(Object.keys(notification).length > 0) && <NotificationCard notification={notification} setNotification={setNotification} />}
+            {notification && <NotificationCard notification={notification} setNotification={setNotification} />}
 
             <form onSubmit={handleSubmit}>
                 <div className="Profile-inputgroup">
