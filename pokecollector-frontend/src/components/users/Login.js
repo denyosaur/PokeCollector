@@ -2,7 +2,7 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 
 // import handleFormSubmit from "../../hooks/handleFormSubmit";
-import UsersApi from "../../api/users-api"
+import UsersApi from "../../api/users-api";
 import useFields from "../../hooks/useFields";
 
 import "../../css/login.css";
@@ -24,6 +24,7 @@ const Login = ({ setAuthed, handleFormOpen }) => {
         setAuthed(login.token) //set authed to the user tokwn
         localStorage.setItem("token", login.token); //store token in localStorage
         localStorage.setItem("username", formData.username); //store username in localStorage
+        if (login.isAdmin) localStorage.setItem("isAdmin", login.isAdmin); //store admin status in localStorage if user is an admin
         handleFormOpen({ evt: { target: { innerText: "reset" } } });
         history.push("/"); //push homepage to history 
     };

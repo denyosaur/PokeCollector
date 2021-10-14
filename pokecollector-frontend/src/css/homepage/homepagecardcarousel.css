@@ -1,0 +1,12 @@
+.HomepageCardCarousel{
+    display:flex;
+    flex-direction: row;
+    width:70vw;
+}
+
+.HomepageCardCarousel-cards{
+    display:flex;
+    flex-direction: row;
+    overflow:hidden;
+    width:100%;
+}

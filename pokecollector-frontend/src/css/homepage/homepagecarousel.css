@@ -1,0 +1,71 @@
+.carousel-item {
+    max-height:77vh;
+    width:100%;
+}
+
+.HomepageCarousel-item img {
+    height:100%;
+    width:100%;
+    object-fit:cover;
+
+}
+
+.HomepageCarousel-item iframe {
+    height:77vh;
+    width:100%;
+
+}
+
+.HomepageCarousel-item-big img{
+    height:100%;
+    width:100%;
+}
+
+.HomepageCarousel-header{
+    font-size:  5vw;
+    text-shadow: 0 3px 5px #000000;
+}
+
+.HomepageCarousel-caption{
+    position:absolute;
+}
+
+.HomepageCarousel-caption p{
+    text-align:center;
+    font-size: 2.5em;
+    text-shadow: 0 3px 5px #0000007c;
+    border-radius: 30px;
+    border-radius: 30px;
+    background-color: rgba(0, 0, 0, 0.4);
+    -moz-box-shadow:    0 0 5px 6px rgb(0, 0, 0, 0.4);
+    -webkit-box-shadow: 0 0 5px 6px rgb(0, 0, 0), 0.4;
+    box-shadow:         0 0 5px 6px rgb(0, 0, 0, 0.4);
+}
+
+.HomepageCarousel-caption1 {
+    bottom:30vh;
+    right:25vw;
+    text-align:left;
+    font-size: 1.2vw;
+}
+
+.HomepageCarousel-caption2 {
+    width:30vw;
+    right:0vw;
+    bottom:5vh;
+    font-size: 1.2vw;
+}
+
+.HomepageCarousel-caption3 {
+    width:30vw;
+    right:0%;
+    bottom: 900%;
+    font-size: 1.2vw;
+}
+
+.HomepageCarousel-caption4 {
+    width:30vw;
+    right:-10%;
+    top:-400%;
+    font-size: 1.2vw;
+}

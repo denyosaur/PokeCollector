@@ -13,6 +13,7 @@ Store username and isAdmin for future authorization.
 function authenticateJWT(req, res, next) {
     try {
         const authHeader = req.headers && req.headers.authorization;
+
         if (authHeader) {
             const token = authHeader.replace(/^[Bb]earer /, "").trim();
             res.locals.user = jwt.verify(token, SECRET_KEY);
@@ -41,7 +42,9 @@ check if user is logged in, and then check if user is admin
 */
 function ensureAdmin(req, res, next) {
     try {
-        if (!res.locals.user || !res.locals.user.isAdmin) {
+        const user = res.locals.user;
+
+        if (!user || !user.isAdmin) {
             throw new UnauthorizedError();
         }
         return next();

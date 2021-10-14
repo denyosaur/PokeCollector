@@ -24,20 +24,12 @@ const MyCards = () => {
         let username = localStorage.getItem("username") || false;
 
         async function getOwnersCards() {
-            let cardDuplicates = new Set();
             let ownedCards = []
             const cardsRes = await CardsApi.getOwnedCards(username, token);
 
             cardsRes.cards.forEach(card => {
-                if (!cardDuplicates.has(card.cardInfo.id)) {
-                    cardDuplicates.add(card.cardInfo.id)
-                    ownedCards.push(
-                        <div key={card.cardInfo.id} className="MyCards-minicard" data={card.cardInfo.id}>
-                            <MiniCard card={card.cardInfo} moreInfo={moreInfo} />
-                        </div>)
-                }
+                ownedCards.push(card)
             })
-
             setCards(ownedCards);
         }
         getOwnersCards();
@@ -49,7 +41,12 @@ const MyCards = () => {
                 <CardSearch setCards={setCards} getCards={searchOwnedCards} />
             </div>
             <div className="MyCards-cards">
-                {cards}
+                {cards.length > 0 && cards.map((card, idx) => {
+                    return (
+                        <div key={`${card.cardInfo.id}_${idx}`} className="MyCards-minicard" data={card.cardInfo.id}>
+                            <MiniCard card={card.cardInfo} moreInfo={moreInfo} />
+                        </div>)
+                })}
             </div>
             {cardId && <div className="MyCards-details">
                 <CardDetails cardId={cardId} setCardId={setCardId} />

@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.json());
 app.use(authenticateJWT);
 
-//routes
+/* Routes */
 app.use("/auth", authRoutes);
 app.use("/cards", cardsRoutes);
 app.use("/decks", decksRoutes);

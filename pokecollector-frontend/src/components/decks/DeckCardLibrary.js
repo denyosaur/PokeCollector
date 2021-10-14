@@ -6,7 +6,7 @@ import OwnedCard from "./OwnedCard";
 
 import "../../css/decks/deckcardlibrary.css";
 
-const DeckCardLibrary = ({ addToDeck, token, username }) => {
+const DeckCardLibrary = ({ addToDeck, token, username, toUpdate }) => {
     const [cards, setCards] = useState([]); //useState to hold array of card info
 
     useEffect(() => {
@@ -26,7 +26,7 @@ const DeckCardLibrary = ({ addToDeck, token, username }) => {
         <div className="DeckCardLibrary">
             {cards.map(card => {
                 return (<div key={card.ownedId} className="DeckCardLibrary-minicard" data={card.ownedId}>
-                    <OwnedCard card={card} addToDeck={addToDeck} />
+                    <OwnedCard card={card} addToDeck={addToDeck} toUpdate={toUpdate} />
                 </div>);
             })}
         </div>

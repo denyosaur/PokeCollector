@@ -4,7 +4,7 @@ import CartContext from "../../context/CartContext";
 
 import "../../css/store/minicard.css"
 
-const MiniCard = ({ card, moreInfo }) => {
+const MiniCard = ({ card, moreInfo, fromShopPage }) => {
     const {
         id,
         name,
@@ -51,9 +51,13 @@ const MiniCard = ({ card, moreInfo }) => {
                         </div>
                     </div>
                     <div className="MiniCard-info-col" data={id} >
-                        <div className="MiniCard-addtocart" data={id}  >
-                            <button><i className="bi bi-cart-plus" data={id} onClick={cartAdd}></i></button>
-                        </div>
+                        {fromShopPage
+                            ? <div className="MiniCard-addtocart" data={id}  >
+                                <button><i className="bi bi-cart-plus" data={id} onClick={cartAdd}></i></button>
+                            </div>
+                            : <div className="MiniCard-info-button" data={id}  >
+                                <button><i className="bi bi-info-circle" data={id} onClick={moreInfo}></i></button>
+                            </div>}
                         <div className="MiniCard-info-setlogo" data={id} >
                             <img src={setLogo} alt={`${setName} logo`} data={id} />
                         </div>

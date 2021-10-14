@@ -52,9 +52,9 @@ const EditDeck = ({ deckId, setEditDeck, setNotification, token, username }) => 
                 await DecksApi.updateCardsInDeck(username, token, deckId, updatedDeck); //update cards in DB
                 await DecksApi.updateDeckInfo(username, token, deckId, updatedInfo); //update name of deck
             } else {
-                await DecksApi.createDeck(username, token, updatedInfo); //create a new deck
+                const newDeckRes = await DecksApi.createDeck(username, token, updatedInfo); //create a new deck
                 if (updatedDeck.updatedDeck.length > 0) {
-                    await DecksApi.updateCardsInDeck(username, token, deckId, updatedDeck); //update cards in DB
+                    await DecksApi.updateCardsInDeck(username, token, newDeckRes.deck.deckId, updatedDeck); //update cards in DB
                 }
             }
 
@@ -65,7 +65,7 @@ const EditDeck = ({ deckId, setEditDeck, setNotification, token, username }) => 
             setEditDeck(false); //send user back to deck page
         } catch (error) {
             const errorMsg = {
-                message: error,
+                message: { message: error[0] },
                 status: "error"
             }
             setNotification(errorMsg);
@@ -92,7 +92,6 @@ const EditDeck = ({ deckId, setEditDeck, setNotification, token, username }) => 
             };
             getDeckInfo();
         }
-
     }, [deckId, token, username]);
 
     return (
@@ -100,10 +99,10 @@ const EditDeck = ({ deckId, setEditDeck, setNotification, token, username }) => 
 
             <div className="EditDeck-col1">
                 <div className="EditDeck-info">
-                    <EditDeckInfo deckInfo={deckInfo} setUpdatedDeckInfo={setUpdatedDeckInfo} />
+                    <EditDeckInfo deckInfo={deckInfo} setUpdatedDeckInfo={setUpdatedDeckInfo} colCards={colCards} />
                 </div>
                 <div className="EditDeck-MyCards">
-                    <DeckCardLibrary addToDeck={addToDeck} token={token} username={username} />
+                    <DeckCardLibrary addToDeck={addToDeck} token={token} username={username} toUpdate={toUpdate} />
                 </div>
             </div>
             <div className="EditDeck-col2">

@@ -36,7 +36,7 @@ class Cards {
 
     /*Pokemon API call to get all cards from a set and push to DB
     make API call using axios.get to get all cards from a set
-    use this._create to create cards. 
+    use this.create to create cards. 
     return array of Cards object
     */
     static async pullAndPushCards(setName) {
@@ -70,9 +70,89 @@ class Cards {
                 "tcgplayer": card.tcgplayer,
                 "prices": card.cardmarket.prices.averageSellPrice
             };
-            const uploadedCard = await this._create(newCard);
+            const uploadedCard = await this.create(newCard);
             return uploadedCard;
         }));
+
+        return cards;
+    };
+
+    /*Get all sets and set information from external API
+    get set info and put into new Set()
+    return new {set: {setId, setName},...}
+    */
+    static async getSets() {
+        const res = await axios.get(`https://api.pokemontcg.io/v2/sets/`);
+        const resData = res.data.data;
+        const sets = [];
+
+        resData.forEach(set => {
+            const setInfo = { setId: set.id, setName: set.name };
+            sets.push(setInfo);
+        })
+
+        return sets;
+    };
+
+    /*Get all sets and set information from external API
+    get set info and put into new Set()
+    return new {set: {setId, setName},...}
+    */
+    static async getCardsFromSet(setId) {
+        const res = await axios.get(`https://api.pokemontcg.io/v2/cards?q=set.id%3A${setId}`);
+        const resCards = res.data.data;
+
+        const cards = resCards.map(card => {
+            const newCard = {
+                "id": card.id,
+                "name": card.name,
+                "superType": card.supertype,
+                "subtype": card.subtype,
+                "hp": card.hp,
+                "types": card.types,
+                "evolvesTo": card.evolvesTo,
+                "rules": card.rules,
+                "attacks": card.attacks,
+                "weaknesses": card.weaknesses,
+                "resistances": card.resistances,
+                "retreatCost": card.retreatCost,
+                "convertedRetreatCost": card.convertedRetreatCost,
+                "setName": card.set.name,
+                "setLogo": card.set.images.logo,
+                "number": card.number,
+                "artist": card.artist,
+                "rarity": card.rarity,
+                "nationalPokedexNumbers": card.nationalPokedexNumbers,
+                "legalities": card.legalities,
+                "images": card.images.large,
+                "tcgplayer": card.tcgplayer,
+                "prices": card.cardmarket.prices.averageSellPrice
+            };
+            return new Cards(
+                card.id,
+                card.name,
+                card.supertype,
+                card.subtype,
+                card.hp,
+                card.types,
+                card.evolvesTo,
+                card.rules,
+                card.attacks,
+                card.weaknesses,
+                card.resistances,
+                card.retreatCost,
+                card.convertedRetreatCost,
+                card.set.name,
+                card.set.images.logo,
+                card.number,
+                card.artist,
+                card.rarity,
+                card.nationalPokedexNumbers,
+                card.legalities,
+                card.images.large,
+                card.tcgplayer,
+                card.cardmarket.prices.averageSellPrice);
+        });
 
         return cards;
     };
@@ -83,7 +163,7 @@ class Cards {
         if ID exists, return BadRequestError for duplicate.
         if card doesn't exist, create a new entry for card in card_library
     */
-    static async _create({ id, name, superType, subtype, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices }) {
+    static async create({ id, name, superType, subtype, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices }) {
         const duplicateCheck = await db.query(`SELECT id AS "cardId"
                                                FROM cards
                                                WHERE id = $1`, [id]);
@@ -212,6 +292,20 @@ class Cards {
         const { id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices } = result.rows[0];
         return new Cards(id, name, supertype, subtypes, hp, types, evolvesTo, rules, attacks, weaknesses, resistances, retreatCost, convertedRetreatCost, setName, setLogo, number, artist, rarity, nationalPokedexNumbers, legalities, images, tcgplayer, prices);
     };
+
+    /*Get All sets currently in database
+            query variable holds the base SQL query.
+            returns all information about card
+        */
+    static async getCurrentSets() {
+
+        const result = await db.query(`SELECT set_name as "setName", COUNT(*)
+                                       FROM cards
+                                       GROUP BY set_name`);
+
+        return result;
+    };
+
 
     /*Delete a card in the card table.
     make a delete query where id = cardId

@@ -9,7 +9,7 @@ const NotificationCard = ({ notification, setNotification }) => {
         "success": "#5cb85c",
         "primary": "#0275d8"
     };
-
+    console.log(notification)
     const closeNotification = (evt) => {
         evt.preventDefault();
         setNotification(false);

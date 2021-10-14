@@ -80,12 +80,19 @@ class Users {
         return array of objects: [{ username, firstName, lastName},...]
     */
     static async findAll() {
-        const result = await db.query(`SELECT username, 
-                                              first_name AS "firstName", 
-                                              last_name AS "lastName" 
+        const result = await db.query(`SELECT username,
+                                              first_name AS "firstName",
+                                              last_name AS "lastName",
+                                              email,
+                                              currency_amount AS "currencyAmount",
+                                              is_admin AS "isAdmin"
                                        FROM users 
-                                       ORDER BY username`);
-        return result.rows;
+                                       ORDER BY username;`);
+        const allUsers = result.rows.map(user => {
+            const { username, firstName, lastName, email, currencyAmount, isAdmin } = user;
+            return new Users(username, firstName, lastName, email, currencyAmount, isAdmin);
+        })
+        return allUsers;
     };
 
     /*
@@ -133,8 +140,8 @@ class Users {
     */
     async updateUserInfo(data) {
         const res = await db.query(`SELECT password
-                                           FROM users 
-                                           WHERE username = $1`, [this.username]);
+            FROM users 
+            WHERE username = $1`, [this.username]);
         const hasedPassword = res.rows[0].password;
         const isValidPassword = await bcrypt.compare(data.currPassword, hasedPassword);
         if (!isValidPassword) throw new BadRequestError("Incorrect current password. Please re-enter your current password.");
@@ -142,6 +149,8 @@ class Users {
 
         //hash the new password
         if (data.password) data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
+
+
 
         const { setCols, values } = sqlForPartialUpdate(
             data,
@@ -181,7 +190,6 @@ class Users {
     async removeAmount(amount) {
         if (this.currencyAmount >= amount) {
             const newAmount = this.currencyAmount - amount;
-            console.log(typeof (newAmount))
             const updated = await db.query(`UPDATE users
                                             SET currency_amount = $1
                                             WHERE username = $2
@@ -200,7 +208,7 @@ class Users {
     return object of username and new currencyAmount {username, currencyAmount}
     */
     async addAmount(amount) {
-        const newAmount = this.currencyAmount + amount;
+        const newAmount = parseInt(this.currencyAmount) + amount;
 
         const updated = await db.query(`UPDATE users
                                         SET currency_amount = $1

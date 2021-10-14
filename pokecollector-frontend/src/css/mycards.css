@@ -1,6 +1,7 @@
 .MyCards {
     display:flex;
     flex-direction: row;
+    margin-top:2vh;
 }
 
 .MyCards-search{
@@ -12,7 +13,7 @@
     flex-wrap:wrap;
     justify-content:space-evenly;
     width:85%;
-    height:800px;
+    height:90vh;
     overflow: scroll;
 }
 

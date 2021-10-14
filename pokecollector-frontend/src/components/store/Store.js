@@ -12,6 +12,7 @@ const Store = () => {
     const getStoreCards = CardsApi.getCards;
     const [cardId, setCardId] = useState(false);
     const [cards, setCards] = useState([]);
+    const [fromShopPage] = useState(true);
 
     const moreInfo = (evt) => {
         const id = evt.target.getAttribute("data");
@@ -36,7 +37,7 @@ const Store = () => {
                 {cards.map(card => {
                     return (
                         <div key={card.id} className="Store-card">
-                            <MiniCard card={card} moreInfo={moreInfo} />
+                            <MiniCard card={card} moreInfo={moreInfo} fromShopPage={fromShopPage} />
                         </div>)
                 })}
             </div>

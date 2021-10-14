@@ -36,9 +36,9 @@ class UsersApi {
     updatedInfo should contain {password, firstName, lastName}
     returns {user:{ username, firstName, lastName, email, isAdmin, currencyAmount }}
     */
-    static async patchUserDetails(username, updatedInfo, token) {
+    static async patchUserDetails(username, dataToUpdate, token) {
 
-        const res = await request(`user/${username}`, token, "PATCH", updatedInfo);
+        const res = await request(`user/${username}`, token, "PATCH", dataToUpdate);
 
         return res;
     }
@@ -47,8 +47,8 @@ class UsersApi {
     updatedInfo should contain {password, firstName, lastName}
     returns {user:{ username, firstName, lastName, email, isAdmin, currencyAmount }}
     */
-    static async deleteUser(username) {
-        const res = await request(`user/${username}`, "DELETE", {});
+    static async deleteUser(username, token) {
+        const res = await request(`user/${username}`, token, "DELETE", {});
 
         return res;
     }
@@ -58,8 +58,8 @@ class UsersApi {
     /*method for getting a list of all users
     returns {users: [{ username, firstName, lastName},...]}
     */
-    static async getAllUsers() {
-        const res = await request("user/admin/allusers");
+    static async getAllUsers(token) {
+        const res = await request("user/admin/allusers", token);
 
         return res;
     }
@@ -67,8 +67,8 @@ class UsersApi {
     /*method for creating admin
     returns object {users: [{ username, firstName, lastName},...]}
     */
-    static async createAdmin(form) {
-        const res = await request("user/admin/createadmin", "POST", form);
+    static async createAdmin(form, token) {
+        const res = await request("user/admin/createuser", token, "POST", form);
 
         return res;
     }

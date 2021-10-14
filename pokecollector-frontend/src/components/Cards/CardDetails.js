@@ -14,8 +14,16 @@ const CardDetails = ({ cardId, setCardId }) => {
     }
 
     function cartAdd() {
-        Cart.addToCart(cardId, card.prices, 1, card.images);
-        console.log(Cart.cart)
+        //cart requires name, images, prices, id
+        const toAdd = {
+            id: cardId,
+            name: card.name,
+            images: card.images,
+            prices: card.prices,
+            setName: card.setName,
+            rarity: card.rarity
+        }
+        Cart.addToCart(toAdd);
     }
 
     useEffect(() => {

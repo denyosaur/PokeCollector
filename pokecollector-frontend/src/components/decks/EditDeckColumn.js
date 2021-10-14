@@ -8,15 +8,11 @@ const EditDeckColumn = ({ colCards, removeFromDeck }) => {
 
     return (
         <div className="EditDeckColumn" >
-            <div className="EditDeckColumn-deck">
-                <div className="EditDeckColumn-cards">
-                    {colCards.map(card => {
-                        return (<div className="" key={card.ownedId}>
-                            <ColumnCards card={card} removeFromDeck={removeFromDeck} />
-                        </div>)
-                    })}
-                </div>
-            </div>
+            {colCards.map(card => {
+                return (<div className="" key={card.ownedId}>
+                    <ColumnCards card={card} removeFromDeck={removeFromDeck} />
+                </div>)
+            })}
         </div>
     )
 };

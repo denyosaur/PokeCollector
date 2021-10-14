@@ -3,22 +3,17 @@ import React, { useState, useContext, useEffect } from "react";
 import StoreApi from "../../api/store-api";
 
 import CartContext from "../../context/CartContext";
-import CartItem from "./CartItem";
-import NotificationCard from "../navigation/NotificationCard";
+
+import CartList from "./CartList";
 
 import "../../css/cart/mycart.css";
 
-const MyCart = ({ setCartOpen, authed }) => {
-    let currUsername = localStorage.getItem("username") || false;
-
+const MyCart = ({ setCartOpen, authed, setOpenLogin, username, setCartTotal }) => {
     const INITIAL_VALUE = { price: 0, quantity: 0 }
-    const notification = {
-        message: ["Login to purchase!"],
-        status: "fail"
-    }
     const { purchase, removeFunds } = StoreApi;
-    const { cart } = useContext(CartContext);
-    const [totals, setTotals] = useState(INITIAL_VALUE)
+    const { cart, clearCart } = useContext(CartContext);
+    const [totals, setTotals] = useState(INITIAL_VALUE);
+    const [cartItems, setCartItems] = useState({});
 
     useEffect(() => {
         let newTotals = {
@@ -30,6 +25,7 @@ const MyCart = ({ setCartOpen, authed }) => {
             newTotals.price += (cart[id].price * cart[id].quantity);
         }
         setTotals(newTotals);
+        setCartItems(cart);
     }, [cart])
 
     const closeCart = () => { setCartOpen(false); }; //handler for closing cart window
@@ -43,16 +39,16 @@ const MyCart = ({ setCartOpen, authed }) => {
     const checkout = () => {
         let cost = { "funds": totals.price };
         async function makePurchase() {
-            await removeFunds(currUsername, cost, authed);
-            await purchase(currUsername, cart, authed);
-            localStorage.removeItem("cart");
+            await removeFunds(username, cost, authed);
+            await purchase(username, cart, authed);
+            clearCart();
             setTotals(INITIAL_VALUE);
+            setCartOpen(false);
         }
         makePurchase();
-    };
+        localStorage.removeItem("cart");
 
-    //array of cards in cart
-    const cartItems = Object.keys(cart).map(id => { return <CartItem id={id} key={id} /> });
+    };
 
     return (
         <>
@@ -62,7 +58,7 @@ const MyCart = ({ setCartOpen, authed }) => {
                     <div className="MyCart-close"><i className="bi bi-x-lg Login-formClose" onClick={closeCart} ></i></div>
                 </div>
                 <div className="MyCart-items">
-                    {cartItems}
+                    <CartList cartItems={cartItems} />
                 </div>
                 <div className="MyCart-Checkout">
                     <div className="MyCart-total">
@@ -70,7 +66,7 @@ const MyCart = ({ setCartOpen, authed }) => {
                     </div>
                     {authed
                         ? <button className="MyCart-Checkout-button" onClick={checkout}>Checkout[{totals.quantity}]</button>
-                        : <NotificationCard notification={notification} />}
+                        : <button className="MyCart-Checkout-button" onClick={() => setOpenLogin("Login")}>Checkout[{totals.quantity}]</button>}
                 </div>
             </div>
             <div className="MyCart-background" onClick={closeCart}></div>

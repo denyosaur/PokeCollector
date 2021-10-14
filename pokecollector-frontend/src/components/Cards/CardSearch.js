@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+import CardsApi from "../../api/cards-api";
 
 import useFields from "../../hooks/useFields";
 
@@ -18,6 +20,16 @@ const CardSearch = ({ setCards, getCards }) => {
     };
 
     const [formData, handleChange, setFormData] = useFields(INITIAL_STATE); //hook for field changes
+    const [searchSetName, setSearchSetNames] = useState([]);
+
+    useEffect(() => {
+        async function getSetNames() {
+            const sets = await CardsApi.getSetNames();
+
+            setSearchSetNames(sets.setNames);
+        }
+        getSetNames()
+    }, [])
 
     const clearForm = (evt) => {
         evt.preventDefault();
@@ -42,9 +54,7 @@ const CardSearch = ({ setCards, getCards }) => {
             }
 
             const searchRes = await getCards(data, token, username);
-
             setCards(searchRes.cards);
-
         }
         searchCardFiltered();
     }
@@ -100,11 +110,10 @@ const CardSearch = ({ setCards, getCards }) => {
                         <label htmlFor="setName">Set Name</label>
                         <select name="setName" id="setName" onChange={handleChange} value={formData.setNames}>
                             <option value=""></option>
-                            <option value="Base">Base</option>
-                            <option value="Jungle">Jungle</option>
-                            <option value="Fossil">Fossil</option>
-                            <option value="Base Set 2">Base Set 2</option>
-                            <option value="Team Rocket">Team Rocket</option>
+                            {searchSetName.map(setName => {
+                                const name = setName.setName;
+                                return <option key={name} value={name}>{name}</option>
+                            })}
                         </select>
                     </div>
                     <div className="CardSearch-buttons">

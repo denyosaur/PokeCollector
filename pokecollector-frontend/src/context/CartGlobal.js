@@ -1,7 +1,7 @@
 import React, { useReducer } from "react";
 
 import CartContext from "./CartContext";
-import { ADD_CARD, REMOVE_CARD, cartReducer } from "./Cart-helper";
+import { ADD_CARD, REMOVE_CARD, CLEAR, cartReducer } from "./Cart-helper";
 
 const CartGlobal = ({ children }) => {
     const [cartState, dispatcher] = useReducer(cartReducer, { cart: {} });
@@ -14,10 +14,15 @@ const CartGlobal = ({ children }) => {
         dispatcher({ type: REMOVE_CARD, card: card })
     };
 
+    const clearCart = () => {
+        dispatcher({ type: CLEAR })
+    };
+
     const value = {
         cart: cartState.cart,
         addToCart: addToCart,
-        removeFromCart: removeFromCart
+        removeFromCart: removeFromCart,
+        clearCart: clearCart
     };
 
     return (

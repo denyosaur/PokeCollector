@@ -38,6 +38,7 @@ const DeckBox = ({ deck, editDeckHandler, token, username, setNotification, setD
             setDeckStatus(true);
             setTimeout(() => {
                 setNotification(false); //push profile to history 
+                setDeckStatus(false);
             }, 3000);
         } catch (error) {
             const errorMsg = {
@@ -58,10 +59,10 @@ const DeckBox = ({ deck, editDeckHandler, token, username, setNotification, setD
 
             {(deckId === "newDeck")
                 ? <div className="DeckBox-add">
-                    <i class="bi bi-file-plus" onClick={() => editDeckHandler(deckId)}></i>
+                    <i className="bi bi-file-plus" onClick={() => editDeckHandler(deckId)}></i>
                 </div>
                 : <div className="DeckBox-delete" onClick={handleDeleteClick}>
-                    <i class="bi bi-trash"></i>
+                    <i className="bi bi-trash"></i>
                 </div>}
             <div className="DeckBox-image" onClick={() => editDeckHandler(deckId)}>
                 {(deckId === "newDeck")

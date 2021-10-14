@@ -62,6 +62,26 @@
     z-index:3;
 }
 
+.MiniCard-info-button button {
+    position:relative;
+    height:42px;
+    width:42px;
+    bottom:20px;
+    left:45px;
+    border:0;
+    border-radius:50px;
+    background-color:#5cb85c;
+    box-shadow:0 0 10px rgba(0,0,0,0.5);
+    z-index: 4;
+}
+
+.MiniCard-info-button i{
+    font-size:20px;
+    color:white;
+    background-color:#5cb85c;
+    z-index:3;
+}
+
 .MiniCard-info-header{
     position:relative;
     bottom:4px;

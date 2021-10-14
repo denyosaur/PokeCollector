@@ -14,14 +14,18 @@ function App() {
 
   useEffect(() => {
     setAuthed(localStorage.getItem("token") || false); //fetch the token from localStorage, set to false if not available
+
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
     <div className="App">
+
       <CartGlobal>
         <BrowserRouter>
           <NavbarComp authed={authed} setAuthed={setAuthed} />
+          <div className="App-background"></div>
           <div className="App-container">
             <Routes />
           </div>

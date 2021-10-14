@@ -7,7 +7,6 @@ const express = require("express");
 const { ensureAdmin, ensureCorrectUserOrAdmin } = require("../middleware/auth");
 
 const Users = require("../models/users");
-const UsersCards = require("../models/users_cards");
 
 const { createToken } = require("../helpers/token-helpers");
 
@@ -76,9 +75,6 @@ router.delete("/:username", ensureCorrectUserOrAdmin, async function (req, res, 
     };
 });
 
-
-
-
 /*********ADMIN ONLY*********/
 
 /* GET user/ {user} =>  { users: [ {username, firstName, lastName, email }, ... ] }
@@ -96,14 +92,13 @@ router.get("/admin/allusers", ensureAdmin, async function (req, res, next) {
     };
 });
 
-
 /* POST user/ {user} => {user, token}
 create a new user. can set to admin - admin only
 check inputs against jsonschema to validate that inputs are correct. if not throw BadRequestError
 pass in req.body to User.register to create new account.
 return newAdmin and token { newAdmin, token }
 */
-router.post("/admin/createadmin", ensureAdmin, async function (req, res, next) {
+router.post("/admin/createuser", ensureAdmin, async function (req, res, next) {
     try {
         jsonValidate(req.body, userNewAdminSchema); //json validator helper function
 

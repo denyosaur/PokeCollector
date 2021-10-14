@@ -40,7 +40,7 @@ router.patch("/:username/removeFunds", ensureCorrectUserOrAdmin, async function 
 
         const { funds } = req.body;
         const { username } = req.params;
-        console.log(funds)
+
         const user = await Users.getUser(username);
         const updatedAmount = await user.removeAmount(funds);
 

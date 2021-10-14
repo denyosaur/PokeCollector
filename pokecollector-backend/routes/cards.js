@@ -39,6 +39,19 @@ router.get("/", async function (req, res, next) {
     };
 });
 
+/* GET /cardsets => {setNames:[{setName, count},...]}
+*/
+router.get("/sets/getsetnames", async function (req, res, next) {
+    try {
+        const sets = await Cards.getCurrentSets();
+        const setNames = sets.rows;
+
+        return res.json({ setNames });
+    } catch (error) {
+        return next(error);
+    };
+});
+
 /* GET /cards/:cardId => {card}
 route to get a specific card's information from db
 */
@@ -104,7 +117,7 @@ router.get("/user/:username/search", ensureLoggedIn, async function (req, res, n
 
 /*********ADMIN ONLY*********/
 
-/* POST /pullCards/:setId  =>  { deleted: handle }
+/* POST /pullCards/:setId  => {newCards:[{card},...]}
 route to pull cards from external API and upload their data to DB
 returns newCards object {newCards:[{card},...]}
 */
@@ -113,6 +126,49 @@ router.post("/pullCards/:setId", ensureAdmin, async function (req, res, next) {
         const { setId } = req.params;
 
         const newCards = await Cards.pullAndPushCards(setId);
+
+        return res.json({ newCards });
+    } catch (error) {
+        return next(error);
+    };
+});
+
+/* GET /external/getsets  => { sets }
+route to get all sets and their information from external API
+returns { sets }
+*/
+router.get("/external/getsets", ensureAdmin, async function (req, res, next) {
+    try {
+        const sets = await Cards.getSets()
+
+        return res.json({ sets });
+    } catch (error) {
+        return next(error);
+    };
+});
+
+/* GET /external/getcards  => { sets }
+route to get all cards from a set and their information from external API
+returns { sets }
+*/
+router.get("/external/getcards/:setId", ensureAdmin, async function (req, res, next) {
+    try {
+        const { setId } = req.params;
+        const cards = await Cards.getCardsFromSet(setId);
+        return res.json({ cards });
+    } catch (error) {
+        return next(error);
+    };
+});
+
+/* POST /createcard  => { deleted: handle }
+route to create a single card from external API
+returns newCards object {newCards:[{card},...]}
+*/
+router.post("/createcard", ensureAdmin, async function (req, res, next) {
+    try {
+        const cardInfo = req.body;
+        const newCards = await Cards.create(cardInfo);
 
         return res.json({ newCards });
     } catch (error) {
