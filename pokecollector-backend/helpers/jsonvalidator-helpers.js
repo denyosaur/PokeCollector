@@ -7,6 +7,7 @@ function jsonValidate(body, schema) {
         const errors = validate.errors.map(error => error.stack);
         throw new BadRequestError(errors);
     };
+
 };
 
 module.exports = { jsonValidate };

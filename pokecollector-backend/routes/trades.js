@@ -99,7 +99,7 @@ router.patch("/:username/:msgId", ensureCorrectUserOrAdmin, async function (req,
         return res.json({ updated: updated });
     } catch (error) {
         return next(error);
-    }
+    };
 });
 
 
@@ -150,7 +150,7 @@ router.delete("/:username/:msgId/deleteMessage", ensureCorrectUserOrAdmin, async
         return res.status(201).json({ deleted: msg });
     } catch (error) {
         return next(error);
-    }
+    };
 });
 
 module.exports = router;

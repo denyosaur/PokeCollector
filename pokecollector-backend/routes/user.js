@@ -51,7 +51,7 @@ router.patch("/:username", ensureCorrectUserOrAdmin, async function (req, res, n
         return res.json({ updatedUser });
     } catch (error) {
         return next(error);
-    }
+    };
 });
 
 

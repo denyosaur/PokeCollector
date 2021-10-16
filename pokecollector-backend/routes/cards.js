@@ -64,7 +64,7 @@ router.get("/:cardId", async function (req, res, next) {
         return res.json({ card });
     } catch (error) {
         return next(error);
-    }
+    };
 });
 
 /*********LOGGED IN*********/

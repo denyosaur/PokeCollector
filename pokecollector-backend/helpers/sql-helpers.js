@@ -12,6 +12,6 @@ function sqlForPartialUpdate(updateData, jsToSql) {
         setCols: cols.join(", "),
         values: Object.values(updateData)
     };
-}
+};
 
 module.exports = { sqlForPartialUpdate };

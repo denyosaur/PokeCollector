@@ -19,8 +19,8 @@ function authenticateJWT(req, res, next) {
             res.locals.user = jwt.verify(token, SECRET_KEY);
         }
         return next();
-    } catch (err) {
-        return next();
+    } catch (error) {
+        return next(error);
     };
 };
 
@@ -31,8 +31,8 @@ function ensureLoggedIn(req, res, next) {
     try {
         if (!res.locals.user) throw new UnauthorizedError();
         return next();
-    } catch (e) {
-        return next(e);
+    } catch (error) {
+        return next(error);
     };
 };
 
@@ -48,8 +48,8 @@ function ensureAdmin(req, res, next) {
             throw new UnauthorizedError();
         }
         return next();
-    } catch (err) {
-        return next(err);
+    } catch (error) {
+        return next(error);
     };
 };
 
@@ -64,8 +64,8 @@ function ensureCorrectUserOrAdmin(req, res, next) {
             throw new UnauthorizedError();
         }
         return next();
-    } catch (err) {
-        return next(err);
+    } catch (error) {
+        return next(error);
     };
 };
 

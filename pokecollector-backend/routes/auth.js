@@ -34,7 +34,7 @@ router.post("/token", async function (req, res, next) {
         return res.json({ token, isAdmin });
     } catch (error) {
         return next(error);
-    }
+    };
 });
 
 /* POST /auth/token: {username,password,firstName,lastName,email,isAdmin} => token 
@@ -56,7 +56,7 @@ router.post("/register", async function (req, res, next) {
         return res.status(201).json({ token });
     } catch (error) {
         return next(error);
-    }
+    };
 })
 
 module.exports = router;
