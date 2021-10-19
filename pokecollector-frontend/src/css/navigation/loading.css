@@ -1,0 +1,17 @@
+.Loading{
+    display:flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    width:100%;
+}
+
+.Loading img{
+    height:auto;
+    width:15vw;
+    min-width:200px;
+}
+
+.Loading-text span {
+
+}

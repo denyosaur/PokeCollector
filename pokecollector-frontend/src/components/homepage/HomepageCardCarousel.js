@@ -19,7 +19,7 @@ const HomepageCardCarousel = () => {
     useEffect(() => {
         async function getCarouselCards() {
             const searchRes = await getStoreCards({ rarity: 'Rare Holo' }, false, false);
-            console.log(searchRes)
+
             setCards(searchRes.cards)
         }
         getCarouselCards();

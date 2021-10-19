@@ -5,7 +5,7 @@
 
 
 .App-background {
-  background-image: url("https://i.imgur.com/3P8fNLT.jpg");
+  background-image: url("./images/background.jpg");
   background-color: #4484CE;
   background-blend-mode: overlay;
   position: fixed;

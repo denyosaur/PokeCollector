@@ -1,71 +1,41 @@
-# Getting Started with Create React App
+Pokecollector
+=====================================
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Mock ecommerce website that lets users purchase a handful of pokemon cards, and build decks. 
+https://pokecollector.herokuapp.com/
 
-## Available Scripts
+Purpose
+-------
 
-In the project directory, you can run:
+The purpose of this project is to practice and present my skills for both front-end and back-end. eCommerce sites are very common around the web, so I wanted to make an attempt at building one out from scratch. Although the site does not accept or use any form of real currency (the user can add as much money as they want), the site attempts to mimic the exact userflow from real ecommerce sites. 
 
-### `npm start`
+Some userflows include being able to view products while not logged in, having a shopping cart persist through logins/logouts, deleting/updating the shopping card, and registering and logging in. On top of ecommerce userflows, the user can view the products they purchased and organize them into specific categories (decks).
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Features
+-------
+* ** Homepage that describes what can be done on the site.
+* ** Users are able to login and register.
+    * ** Logged in users are able to update their information and add funds.
+* ** Ability to view all products available for purchase without having to login through store page.
+    * ** Ability to filter through products - filter by name, minimum price, maximum price, rarity, pokemon type, and set name.
+    * ** Users are able to add cards to their cart through the store page. They don't have to be logged in.
+    * ** Products can be clicked on to view more details.
+* ** Shopping cart functionality that persists through logins and logouts.
+    * ** Shopping cart is handle through a combination of state and local storage.
+    * ** Users can remove or increment items in their cart.
+    * ** Purchasing is only available for users who are logged in.
+* ** Ability to view cards that the user owns.
+    * ** After logging in, the user is able to view all the cards they owned.
+    * ** This page allows uers to filter through all their cards similar to the store page. 
+* ** Once users are logged in, they can create mock decks with the cards they own.
+    * ** New decks can be created and deleted.
+    * ** Decks can be named and renamed, and images covers for the decks can be chosen from the cards that they selected for their deck.
+* ** There is a special page that only admins are able to view
+    * ** Admins are able to view a list of all users and delete or create new users or admins.
+    * ** Admins can view all cards and their information currently in the database.
+    * ** Admins are able to add new cards to the database from an external API. 
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# pokecolletor_frontend
+API
+-------
+* ** Only one external API was used for this project. https://pokemontcg.io/
+    * ** This API is used to pull in information about cards and added directly to the database.

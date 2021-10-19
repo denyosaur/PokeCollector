@@ -8,10 +8,12 @@ import Admin from "./admin/Admin";
 import UserProfile from "./users/UserProfile";
 import MyCards from "./users/MyCards";
 import MyDecks from "./decks/MyDecks";
+import NotFound from "./NotFound";
 
 import PrivateRoute from "./PrivateRoute";
 
 const Routes = () => {
+
     return (
         <Switch>
             <Route exact path="/"><Homepage /></Route>
@@ -21,6 +23,7 @@ const Routes = () => {
             <PrivateRoute exact path="/profile" ><UserProfile /></PrivateRoute>
             <PrivateRoute exact path="/mycards"><MyCards /></PrivateRoute>
             <PrivateRoute exact path="/mydecks"><MyDecks /></PrivateRoute>
+            <Route><NotFound /></Route>
         </Switch>
     )
 };

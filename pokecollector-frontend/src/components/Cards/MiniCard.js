@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 
 import CartContext from "../../context/CartContext";
 
-import "../../css/store/minicard.css"
+import "../../css/cards/minicard.css"
 
 const MiniCard = ({ card, moreInfo, fromShopPage }) => {
     const {

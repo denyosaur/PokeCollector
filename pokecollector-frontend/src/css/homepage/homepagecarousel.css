@@ -26,9 +26,7 @@
     text-shadow: 0 3px 5px #000000;
 }
 
-.HomepageCarousel-caption{
-    position:absolute;
-}
+
 
 .HomepageCarousel-caption p{
     text-align:center;
@@ -36,10 +34,10 @@
     text-shadow: 0 3px 5px #0000007c;
     border-radius: 30px;
     border-radius: 30px;
-    background-color: rgba(0, 0, 0, 0.4);
-    -moz-box-shadow:    0 0 5px 6px rgb(0, 0, 0, 0.4);
-    -webkit-box-shadow: 0 0 5px 6px rgb(0, 0, 0), 0.4;
-    box-shadow:         0 0 5px 6px rgb(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.6);
+    -moz-box-shadow:    0 0 5px 6px rgb(0, 0, 0, 0.6);
+    -webkit-box-shadow: 0 0 5px 6px rgb(0, 0, 0), 0.6;
+    box-shadow:         0 0 5px 6px rgb(0, 0, 0, 0.6);
 }
 
 .HomepageCarousel-caption1 {
@@ -50,6 +48,7 @@
 }
 
 .HomepageCarousel-caption2 {
+    position:absolute;
     width:30vw;
     right:0vw;
     bottom:5vh;
@@ -57,15 +56,15 @@
 }
 
 .HomepageCarousel-caption3 {
+    position:absolute;
     width:30vw;
     right:0%;
-    bottom: 900%;
+    bottom: 15vh;
     font-size: 1.2vw;
 }
 
 .HomepageCarousel-caption4 {
     width:30vw;
-    right:-10%;
-    top:-400%;
+
     font-size: 1.2vw;
 }

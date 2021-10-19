@@ -37,6 +37,7 @@ const CardDetails = ({ cardId, setCardId }) => {
             });
 
             setCard(details.card);
+            console.log(details.card)
         }
         getCardDetails(cardId);
     }, [cardId])
@@ -59,6 +60,14 @@ const CardDetails = ({ cardId, setCardId }) => {
                                     <span>{card.name}</span>
                                 </li>
                                 <li>
+                                    <label>Pokemon #</label>
+                                    <span>{card.number}</span>
+                                </li>
+                                <li>
+                                    <label>Type</label>
+                                    <span>{card.types}</span>
+                                </li>
+                                <li>
                                     <label>Set</label>
                                     <span>{card.setName}</span>
                                 </li>
@@ -67,13 +76,14 @@ const CardDetails = ({ cardId, setCardId }) => {
                                     <span>{card.rarity}</span>
                                 </li>
                                 <li>
-                                    <label>Prices</label>
+                                    <label>Price</label>
                                     <span>${card.prices}</span>
                                 </li>
                                 <li>
                                     <label>Artist</label>
                                     <span>{card.artist}</span>
                                 </li>
+
                             </ul>
                             <div className="CardDetails-setimage">
                                 <img src={card.setLogo} alt={`${card.setName} card`} />

@@ -4,7 +4,7 @@ import CardsApi from "../../api/cards-api";
 
 import useFields from "../../hooks/useFields";
 
-import "../../css/store/cardsearch.css"
+import "../../css/cards/cardsearch.css"
 
 const CardSearch = ({ setCards, getCards }) => {
     const token = localStorage.getItem("token") || false;

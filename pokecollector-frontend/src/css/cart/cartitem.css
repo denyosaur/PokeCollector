@@ -23,8 +23,20 @@
     width:40%;
 }
 
+.CartItem-setName {
+    font-size: calc(13px + .4vw);
+    height:20px;
+}
+
 .CartItem-name {
-    font-size: 30px;
+    font-size: calc(13px + .8vw);
+    white-space: nowrap;
+    height:35px;
+}
+
+.CartItem-rarity {
+    font-size: calc(13px + .4vw);
+    height:40px;
 }
 
 .CartItem-price {

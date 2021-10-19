@@ -5,10 +5,12 @@ import DecksApi from "../../api/deck-api";
 import DeckBox from "./DeckBox";
 import EditDeck from "./EditDeck";
 import NotificationCard from "../navigation/NotificationCard";
+import Loading from "../navigation/Loading";
 
 import "../../css/decks/mydecks.css";
 
 const MyDecks = () => {
+    const [isLoading, setIsLoading] = useState(true);
     const [notification, setNotification] = useState(false);
     const [decks, setDecks] = useState([]); //useState for creating deckboxes and passing through deck information 
     const [deckStatus, setDeckStatus] = useState(false); //useState for reloading component after deleting a deckbox
@@ -36,16 +38,19 @@ const MyDecks = () => {
 
         //use API to get decks info and set in setDecks. 
         async function getDecks() {
+            setIsLoading(true);
             const deckRes = await DecksApi.getDecks(lsUsername, lsToken);
 
             setDecks(deckRes.decks);
+            setIsLoading(false);
         }
 
         getDecks();
     }, [editDeck, deckStatus]);
 
-    return (
-        <div className="MyDecks">
+    return (isLoading
+        ? <Loading />
+        : (<div className="MyDecks">
             <div className="MyDecks-notification">
                 {notification && <NotificationCard notification={notification} setNotification={setNotification} />}
             </div>
@@ -64,7 +69,7 @@ const MyDecks = () => {
                 : (<div className="MyDecks-editdeck">
                     <EditDeck deckId={editDeck} setEditDeck={setEditDeck} setNotification={setNotification} token={token} username={username} />
                 </div>)}
-        </div>
+        </div>)
     )
 };
 

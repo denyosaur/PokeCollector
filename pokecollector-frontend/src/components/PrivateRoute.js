@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
-import UsersApi from "../api/users-api"
+import UsersApi from "../api/users-api";
 
 function PrivateRoute({ exact, path, children }) {
     const username = localStorage.getItem("username") || false;

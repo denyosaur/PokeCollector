@@ -5,7 +5,7 @@ import "../../css/admin/adminbar.css";
 const AdminBar = ({ setAdminPage }) => {
     const handleClick = (evt) => {
         setAdminPage(evt.target.innerText)
-    }
+    };
 
 
     return <div className="AdminBar">

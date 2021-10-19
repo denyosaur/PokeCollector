@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 
 import DecksApi from "../../api/deck-api";
+import CardsApi from "../../api/cards-api";
 
 import EditDeckInfo from "./EditDeckInfo";
 import DeckCardLibrary from "./DeckCardLibrary";
 import EditDeckColumn from "./EditDeckColumn";
-
 
 import "../../css/decks/editdeck.css";
 
@@ -13,6 +13,7 @@ const EditDeck = ({ deckId, setEditDeck, setNotification, token, username }) => 
     const INITIAL_STATE = { deck: { deckName: "", deckImage: "" }, cards: [] };
     const [deckInfo, setDeckInfo] = useState(INITIAL_STATE);//set state for cards in deck
     const [updatedDeckInfo, setUpdatedDeckInfo] = useState(INITIAL_STATE);//set state for cards in deck
+    const [ownedCards, setOwnedCards] = useState([]);//set state for cards in deck
     const [colCards, setColCards] = useState([]);//set state for cards in deck
     const [toUpdate, setToUpdate] = useState(new Set());//set state for holding card ownedIds for updating DB when saving
 
@@ -79,19 +80,27 @@ const EditDeck = ({ deckId, setEditDeck, setNotification, token, username }) => 
 
     //when a deck is selected, deckId state is updated, which runs this useEffect
     useEffect(() => {
-        if (deckId !== "newDeck") {
-            async function getDeckInfo() {
-                const deckRes = await DecksApi.getDeckInfo(username, token, deckId); //get cards in deck from DB
-                //forEach card in deck, update the toUpdate state with ownedId
-                deckRes.cards.forEach(card => {
-                    setToUpdate(previous => new Set(previous.add(card.ownedId)))
-                })
-                setDeckInfo(deckRes);
-                setUpdatedDeckInfo({ deckName: deckRes.deck.deckName, deckImage: deckRes.deck.deckImage });
-                setColCards(deckRes.cards); //set state for cards in deck
-            };
-            getDeckInfo();
-        }
+        async function getDeckInfo() {
+            const deckRes = await DecksApi.getDeckInfo(username, token, deckId); //get cards in deck from DB
+
+            //forEach card in deck, update the toUpdate state with ownedId
+            deckRes.cards.forEach(card => {
+                setToUpdate(previous => new Set(previous.add(card.ownedId)))
+            });
+
+            setDeckInfo(deckRes); //set deck info
+            setUpdatedDeckInfo({ deckName: deckRes.deck.deckName, deckImage: deckRes.deck.deckImage });
+            setColCards(deckRes.cards); //set state for cards in deck
+        };
+        async function getOwnedCards() {
+            const ownedCardsRes = await CardsApi.getOwnedCards(username, token); //get all owner's cards
+
+            setOwnedCards(ownedCardsRes.cards); //set all owned cards here
+        };
+
+        getOwnedCards();
+        if (deckId !== "newDeck") getDeckInfo();
+
     }, [deckId, token, username]);
 
     return (
@@ -102,7 +111,7 @@ const EditDeck = ({ deckId, setEditDeck, setNotification, token, username }) => 
                     <EditDeckInfo deckInfo={deckInfo} setUpdatedDeckInfo={setUpdatedDeckInfo} colCards={colCards} />
                 </div>
                 <div className="EditDeck-MyCards">
-                    <DeckCardLibrary addToDeck={addToDeck} token={token} username={username} toUpdate={toUpdate} />
+                    <DeckCardLibrary addToDeck={addToDeck} ownedCards={ownedCards} toUpdate={toUpdate} />
                 </div>
             </div>
             <div className="EditDeck-col2">
@@ -110,7 +119,9 @@ const EditDeck = ({ deckId, setEditDeck, setNotification, token, username }) => 
                     <EditDeckColumn colCards={colCards} deckInfo={deckInfo} removeFromDeck={removeFromDeck} />
                 </div>
                 <div className="EditDeck-buttons">
-                    <button className="EditDeck-save" onClick={saveDeck}>Save Deck</button>
+                    {updatedDeckInfo.deckName !== ""
+                        ? <button className="EditDeck-save" onClick={saveDeck}>Save Deck</button>
+                        : <button className="EditDeck-save" disabled onClick={saveDeck}>Save Deck</button>}
                     <button className="EditDeck-cancel" onClick={cancelEdit}>Cancel</button>
                 </div>
             </div>

@@ -21,10 +21,10 @@ const CartItem = ({ card, id, cartRemove, cartAdd }) => {
                 </div>
             </div>
             <div className="CartItem-price">
-                ${price * quantity}
+                <span>${price * quantity}</span>
             </div>
         </div>
     )
-}
+};
 
 export default CartItem;

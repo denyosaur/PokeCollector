@@ -12,14 +12,14 @@ const HomepageCarousel = () => {
     };
 
     return (
-        <Carousel className="HomepageCarousel" activeIndex={index} onSelect={handleSelect} interval={100000} pause={'hover'} wrap={false}>
+        <Carousel className="HomepageCarousel" activeIndex={index} onSelect={handleSelect} interval={107000} pause={'hover'} wrap={false}>
             <Carousel.Item>
                 <div className="HomepageCarousel-item">
                     <img src="https://i.imgur.com/IC5BXSv.jpg" alt="PurplePokemonCard" />
                 </div>
                 <Carousel.Caption>
                     <div className="HomepageCarousel-caption HomepageCarousel-caption1">
-                        <p><span className="HomepageCarousel-header">PokeCollector</span> Welcome to PokeCollector!</p>
+                        <p><span className="HomepageCarousel-header">PokeCollector</span></p> <p>Welcome to PokeCollector!</p>
                     </div>
                 </Carousel.Caption>
             </Carousel.Item>
@@ -55,7 +55,7 @@ const HomepageCarousel = () => {
             </Carousel.Item>
             <Carousel.Item>
                 <div className="HomepageCarousel-item">
-                    <iframe src="https://www.youtube.com/embed/FDqDvvJyY2w?controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <iframe src="https://www.youtube.com/embed/FDqDvvJyY2w?controls=0" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
                 </div>
             </Carousel.Item>
         </Carousel>
