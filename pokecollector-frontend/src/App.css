@@ -5,7 +5,6 @@
 
 
 .App-background {
-  background-image: url("./images/background.jpg");
   background-color: #4484CE;
   background-blend-mode: overlay;
   position: fixed;

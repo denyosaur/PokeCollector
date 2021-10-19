@@ -7,6 +7,8 @@ import Routes from "./components/Routes";
 
 import CartGlobal from "./context/CartGlobal";
 
+import Background from './images/background.jpg'
+
 import './App.css';
 
 function App() {
@@ -25,7 +27,7 @@ function App() {
       <CartGlobal>
         <BrowserRouter>
           <NavbarComp authed={authed} setAuthed={setAuthed} />
-          <div className="App-background"></div>
+          <div className="App-background" styles={{ backgroundImage: `url(${Background})` }}></div>
           <div className="App-container">
             <Routes />
           </div>
