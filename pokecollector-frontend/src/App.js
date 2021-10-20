@@ -27,7 +27,7 @@ function App() {
       <CartGlobal>
         <BrowserRouter>
           <NavbarComp authed={authed} setAuthed={setAuthed} />
-          <div className="App-background" styles={{ backgroundImage: `url(${Background})` }}></div>
+          <div className="App-background" style={{ backgroundImage: `url(${Background})` }}></div>
           <div className="App-container">
             <Routes />
           </div>
