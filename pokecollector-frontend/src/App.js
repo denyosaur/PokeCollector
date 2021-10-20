@@ -7,7 +7,7 @@ import Routes from "./components/Routes";
 
 import CartGlobal from "./context/CartGlobal";
 
-import Background from './images/background.jpg'
+import Background from './images/background.jpg';
 
 import './App.css';
 
