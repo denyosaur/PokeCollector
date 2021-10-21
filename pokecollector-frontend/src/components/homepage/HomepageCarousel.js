@@ -12,7 +12,7 @@ const HomepageCarousel = () => {
     };
 
     return (
-        <Carousel className="HomepageCarousel" activeIndex={index} onSelect={handleSelect} interval={107000} pause={'hover'} wrap={false}>
+        <Carousel className="HomepageCarousel" activeIndex={index} onSelect={handleSelect} interval={7000} pause={'hover'} wrap={false}>
             <Carousel.Item>
                 <div className="HomepageCarousel-item">
                     <img src="https://i.imgur.com/IC5BXSv.jpg" alt="PurplePokemonCard" />
