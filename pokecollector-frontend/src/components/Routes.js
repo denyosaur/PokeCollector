@@ -6,7 +6,7 @@ import Store from "./store/Store";
 import MyCart from "./cart/MyCart";
 import Admin from "./admin/Admin";
 import UserProfile from "./users/UserProfile";
-import MyCards from "./users/MyCards";
+import MyCards from "./mycards/MyCards";
 import MyDecks from "./decks/MyDecks";
 import NotFound from "./NotFound";
 

@@ -5,7 +5,7 @@ import CartContext from "../../context/CartContext";
 
 import "../../css/cards/carddetails.css";
 
-const CardDetails = ({ cardId, setCardId }) => {
+const CardDetails = ({ cardId, setCardId, handleCloseCardDetails }) => {
     const Cart = useContext(CartContext);
     const [card, setCard] = useState("");
 
@@ -95,7 +95,7 @@ const CardDetails = ({ cardId, setCardId }) => {
                     </div>
                 </div>
             </div>
-            <div className="CardDetails-background"></div>
+            <div className="CardDetails-background" onClick={handleCloseCardDetails}></div>
         </>
     )
 }

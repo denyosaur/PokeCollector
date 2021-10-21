@@ -38,12 +38,11 @@ const MyDecks = () => {
 
         //use API to get decks info and set in setDecks. 
         async function getDecks() {
-            setIsLoading(true);
             const deckRes = await DecksApi.getDecks(lsUsername, lsToken);
 
             setDecks(deckRes.decks);
             setIsLoading(false);
-        }
+        };
 
         getDecks();
     }, [editDeck, deckStatus]);

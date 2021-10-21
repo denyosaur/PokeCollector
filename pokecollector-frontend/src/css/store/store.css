@@ -9,9 +9,6 @@
 }
 
 .Store-cards {
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:space-evenly;
     width:85%;
     height:90vh;
     overflow: scroll;

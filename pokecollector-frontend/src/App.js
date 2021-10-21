@@ -7,16 +7,13 @@ import Routes from "./components/Routes";
 
 import CartGlobal from "./context/CartGlobal";
 
-import Background from './images/background.jpg';
-
 import './App.css';
 
 function App() {
   const [authed, setAuthed] = useState(false);
-
+  const background = 'https://i.imgur.com/3P8fNLT.jpg';
   useEffect(() => {
     setAuthed(localStorage.getItem("token") || false); //fetch the token from localStorage, set to false if not available
-
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -26,8 +23,12 @@ function App() {
 
       <CartGlobal>
         <BrowserRouter>
-          <NavbarComp authed={authed} setAuthed={setAuthed} />
-          <div className="App-background" style={{ backgroundImage: `url(${Background})` }}></div>
+          <NavbarComp
+            authed={authed}
+            style={{ backgroundImage: `url(${background})` }}
+            setAuthed={setAuthed}
+          />
+          <div className="App-background" ></div>
           <div className="App-container">
             <Routes />
           </div>
