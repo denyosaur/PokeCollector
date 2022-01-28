@@ -14,6 +14,7 @@ Some userflows include being able to view products while not logged in, having a
 **Features**
 ---------------
 - Homepage that describes what can be done on the site.
+    - Contains two carousels, one made with Bootstrap and one made with vanilla JS.
 - Users are able to login and register.
     - Logged in users are able to update their information and add funds.
 - Ability to view all products available for purchase without having to login through store page.
