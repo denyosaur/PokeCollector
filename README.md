@@ -80,11 +80,11 @@ Some userflows include being able to view products while not logged in, having a
 - Express - v4.17.1
 - Jsonschema - v1.4.0
 - Jsonwebtoken - v8.5.1
-- Node - v16.10.0
+- Node.js - v16.10.0
 - PostgreSQL - v8.7.1
 ##### Frontend
 - Axios - v0.21.1
-- React - v17.0.2
+- React.js - v17.0.2
 - Boostrap-icons - v1.5.0
 - React-bootstrap - v2.0.0-beta.6
 - React-dom - v17.0.2
